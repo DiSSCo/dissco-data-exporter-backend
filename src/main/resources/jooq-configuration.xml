@@ -14,7 +14,7 @@
       <name>org.jooq.meta.postgres.PostgresDatabase</name>
       <inputSchema>public</inputSchema>
       <includes>
-
+        export_queue | export_type
       </includes>
       <forcedTypes>
         <forcedType>
@@ -24,7 +24,7 @@
       </forcedTypes>
     </database>
     <target>
-      <packageName>eu.dissco.backend.database.jooq</packageName>
+      <packageName>eu.dissco.dataexporter.database.jooq</packageName>
       <directory>src/main/java</directory>
     </target>
   </generator>
