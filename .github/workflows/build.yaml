@@ -59,8 +59,8 @@ jobs:
           TRIVY_SKIP_JAVA_DB_UPDATE: true
       - name: Trivy - Stop on Severe Vulnerabilities
         uses: aquasecurity/trivy-action@0.27.0
+        if: github.event_name == 'pull_request'
         with:
-          if: github.event_name == 'pull_request'
           image-ref: '${{ github.event.repository.name }}'
           format: 'table'
           ignore-unfixed: true
