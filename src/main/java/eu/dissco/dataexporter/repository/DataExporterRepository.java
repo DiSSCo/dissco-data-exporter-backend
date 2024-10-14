@@ -5,8 +5,11 @@ import static eu.dissco.dataexporter.database.jooq.Tables.EXPORT_QUEUE;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -29,6 +32,14 @@ public class DataExporterRepository {
         .set(EXPORT_QUEUE.TIME_SCHEDULED, job.timeScheduled())
         .set(EXPORT_QUEUE.EXPORT_TYPE, job.exportType())
         .set(EXPORT_QUEUE.HASHED_PARAMS, job.hashedParameters())
+        .execute();
+  }
+
+  public void markJobAsRunning(UUID id){
+    context.update(EXPORT_QUEUE)
+        .set(EXPORT_QUEUE.JOB_STATE, JobState.RUNNING)
+        .set(EXPORT_QUEUE.TIME_STARTED, Instant.now())
+        .where(EXPORT_QUEUE.ID.eq(id))
         .execute();
   }
 

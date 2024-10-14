@@ -62,6 +62,17 @@ class DataExporterServiceTest {
     }
   }
 
+  @Test
+  void testMarkJobAsRunning(){
+    // Given
+
+    // When
+    service.markJobAsRunning(ID);
+
+    // Then
+    then(repository).should().markJobAsRunning(ID);
+  }
+
   private void initTime() {
     Clock clock = Clock.fixed(CREATED, ZoneOffset.UTC);
     mockedClock = mockStatic(Clock.class);

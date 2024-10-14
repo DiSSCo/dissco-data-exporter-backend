@@ -4,6 +4,7 @@ import eu.dissco.dataexporter.exception.ForbiddenException;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.schema.ExportJobRequest;
 import eu.dissco.dataexporter.service.DataExporterService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +25,22 @@ public class DataExporterController {
 
   private final DataExporterService service;
 
-  @PostMapping("schedule")
-  public ResponseEntity<Void> scheduleJob(Authentication authentication, @RequestBody ExportJobRequest request)
+  @PostMapping("/schedule")
+  public ResponseEntity<Void> scheduleJob(Authentication authentication,
+      @RequestBody ExportJobRequest request)
       throws ForbiddenException, InvalidRequestException {
     var orcid = getOrcid(authentication);
     service.addJobToQueue(request, orcid);
     log.info("Successfully posted job to queue");
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+  }
+
+  @PostMapping("/{id}/running")
+  public ResponseEntity<Void> markJobAsRunning(@PathVariable("id") UUID id) {
+    service.markJobAsRunning(id);
+    log.info("Successfully marked job {} as running", id);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
   }
 
   private static String getOrcid(Authentication authentication) throws ForbiddenException {

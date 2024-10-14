@@ -43,6 +43,10 @@ public class DataExporterService {
     repository.addJobToQueue(job);
   }
 
+  public void markJobAsRunning(UUID id){
+    repository.markJobAsRunning(id);
+  }
+
   private UUID hashParams(JsonNode params) throws InvalidRequestException {
     var hexString = new StringBuilder();
     try {

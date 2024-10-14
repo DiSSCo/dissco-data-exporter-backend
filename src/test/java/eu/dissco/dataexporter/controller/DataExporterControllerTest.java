@@ -1,5 +1,6 @@
 package eu.dissco.dataexporter.controller;
 
+import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.givenClaims;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +44,15 @@ class DataExporterControllerTest {
 
     // Then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+  }
+
+  @Test
+  void testMarkJobAsRunning() {
+    // When
+    var result = controller.markJobAsRunning(ID);
+
+    // Then
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
   }
 
   @Test

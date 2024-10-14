@@ -7,6 +7,7 @@ import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
 import org.jooq.Record;
 import org.junit.jupiter.api.AfterEach;
@@ -37,13 +38,31 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     var result = context.select(EXPORT_QUEUE.asterisk())
         .from(EXPORT_QUEUE)
         .where(EXPORT_QUEUE.ID.eq(ID))
-        .fetchOne(this::recordToJob);
+        .fetchOne(DataExporterRepositoryTest::recordToJob);
 
     // Then
     assertThat(result).isEqualTo(expected);
   }
 
-  private ExportJob recordToJob(Record dbRecord) {
+  @Test
+  void testMarkJobAsRunning() throws Exception {
+    // Given
+    repository.addJobToQueue(givenScheduledJob());
+
+    // When
+    repository.markJobAsRunning(ID);
+    var result = context.select(EXPORT_QUEUE.asterisk())
+        .from(EXPORT_QUEUE)
+        .where(EXPORT_QUEUE.ID.eq(ID))
+        .fetchOne(DataExporterRepositoryTest::recordToJob);
+
+    // Then
+    assertThat(result.timeStarted()).isNotNull();
+    assertThat(result.jobState()).isEqualTo(JobState.RUNNING);
+  }
+
+
+  private static ExportJob recordToJob(Record dbRecord) {
     try {
       return new ExportJob(
           dbRecord.get(EXPORT_QUEUE.ID),
