@@ -54,6 +54,9 @@ jobs:
           format: 'table'
           ignore-unfixed: true
           vuln-type: 'os,library'
+      - name: Wait for trivy to catch its breath
+        run: sleep 30s
+        shell: bash
       - name: Trivy - Stop on Severe Vulnerabilities
         uses: aquasecurity/trivy-action@0.27.0
         with:
