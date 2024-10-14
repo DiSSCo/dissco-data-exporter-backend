@@ -32,13 +32,6 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 
-  /*
-  How to see if space is available -> queue
-  Export job: need to do it through streaming, either stream it to a local file or s3 append
-  How to automatically trigger -> kafka? cron job?
-   */
-
-
   private static String getOrcid(Authentication authentication) throws ForbiddenException {
     var claims = ((Jwt) authentication.getPrincipal()).getClaims();
     if (claims.containsKey("orcid")) {
