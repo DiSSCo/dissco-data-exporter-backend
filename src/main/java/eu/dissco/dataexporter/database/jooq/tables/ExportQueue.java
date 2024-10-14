@@ -4,6 +4,7 @@
 package eu.dissco.dataexporter.database.jooq.tables;
 
 
+import eu.dissco.dataexporter.database.jooq.Keys;
 import eu.dissco.dataexporter.database.jooq.Public;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
@@ -26,6 +27,7 @@ import org.jooq.Stringly;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
@@ -55,27 +57,27 @@ public class ExportQueue extends TableImpl<ExportQueueRecord> {
     /**
      * The column <code>public.export_queue.id</code>.
      */
-    public final TableField<ExportQueueRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID, this, "");
+    public final TableField<ExportQueueRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "");
 
     /**
      * The column <code>public.export_queue.params</code>.
      */
-    public final TableField<ExportQueueRecord, JSONB> PARAMS = createField(DSL.name("params"), SQLDataType.JSONB, this, "");
+    public final TableField<ExportQueueRecord, JSONB> PARAMS = createField(DSL.name("params"), SQLDataType.JSONB.nullable(false), this, "");
 
     /**
      * The column <code>public.export_queue.creator</code>.
      */
-    public final TableField<ExportQueueRecord, String> CREATOR = createField(DSL.name("creator"), SQLDataType.CLOB, this, "");
+    public final TableField<ExportQueueRecord, String> CREATOR = createField(DSL.name("creator"), SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>public.export_queue.job_state</code>.
      */
-    public final TableField<ExportQueueRecord, JobState> JOB_STATE = createField(DSL.name("job_state"), SQLDataType.VARCHAR.asEnumDataType(JobState.class), this, "");
+    public final TableField<ExportQueueRecord, JobState> JOB_STATE = createField(DSL.name("job_state"), SQLDataType.VARCHAR.nullable(false).asEnumDataType(JobState.class), this, "");
 
     /**
      * The column <code>public.export_queue.time_scheduled</code>.
      */
-    public final TableField<ExportQueueRecord, Instant> TIME_SCHEDULED = createField(DSL.name("time_scheduled"), SQLDataType.INSTANT, this, "");
+    public final TableField<ExportQueueRecord, Instant> TIME_SCHEDULED = createField(DSL.name("time_scheduled"), SQLDataType.INSTANT.nullable(false), this, "");
 
     /**
      * The column <code>public.export_queue.time_started</code>.
@@ -90,12 +92,17 @@ public class ExportQueue extends TableImpl<ExportQueueRecord> {
     /**
      * The column <code>public.export_queue.export_type</code>.
      */
-    public final TableField<ExportQueueRecord, ExportType> EXPORT_TYPE = createField(DSL.name("export_type"), SQLDataType.VARCHAR.asEnumDataType(ExportType.class), this, "");
+    public final TableField<ExportQueueRecord, ExportType> EXPORT_TYPE = createField(DSL.name("export_type"), SQLDataType.VARCHAR.nullable(false).asEnumDataType(ExportType.class), this, "");
 
     /**
      * The column <code>public.export_queue.hashed_params</code>.
      */
-    public final TableField<ExportQueueRecord, UUID> HASHED_PARAMS = createField(DSL.name("hashed_params"), SQLDataType.UUID, this, "");
+    public final TableField<ExportQueueRecord, UUID> HASHED_PARAMS = createField(DSL.name("hashed_params"), SQLDataType.UUID.nullable(false), this, "");
+
+    /**
+     * The column <code>public.export_queue.destination_email</code>.
+     */
+    public final TableField<ExportQueueRecord, String> DESTINATION_EMAIL = createField(DSL.name("destination_email"), SQLDataType.CLOB.nullable(false), this, "");
 
     private ExportQueue(Name alias, Table<ExportQueueRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -129,6 +136,11 @@ public class ExportQueue extends TableImpl<ExportQueueRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
+    }
+
+    @Override
+    public UniqueKey<ExportQueueRecord> getPrimaryKey() {
+        return Keys.EXPORT_QUEUE_PK;
     }
 
     @Override

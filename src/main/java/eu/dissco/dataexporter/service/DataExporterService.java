@@ -38,7 +38,8 @@ public class DataExporterService {
         null,
         null,
         ExportType.valueOf(jobRequest.getData().getAttributes().getExportType().toString()),
-        hashParams(params)
+        hashParams(params),
+        jobRequest.getData().getAttributes().getDestinationEmail()
     );
     repository.addJobToQueue(job);
   }

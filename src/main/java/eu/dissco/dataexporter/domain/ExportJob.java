@@ -15,7 +15,8 @@ public record ExportJob(
     Instant timeStarted,
     Instant timeCompleted,
     ExportType exportType,
-    UUID hashedParameters
+    UUID hashedParameters,
+    String destinationEmail
 ) {
 
 }

@@ -73,7 +73,8 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
           dbRecord.get(EXPORT_QUEUE.TIME_STARTED),
           dbRecord.get(EXPORT_QUEUE.TIME_COMPLETED),
           dbRecord.get(EXPORT_QUEUE.EXPORT_TYPE),
-          dbRecord.get(EXPORT_QUEUE.HASHED_PARAMS)
+          dbRecord.get(EXPORT_QUEUE.HASHED_PARAMS),
+          dbRecord.get(EXPORT_QUEUE.DESTINATION_EMAIL)
       );
     } catch (Exception e){
       throw new IllegalStateException();

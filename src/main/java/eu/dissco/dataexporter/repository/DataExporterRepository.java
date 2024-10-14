@@ -32,6 +32,7 @@ public class DataExporterRepository {
         .set(EXPORT_QUEUE.TIME_SCHEDULED, job.timeScheduled())
         .set(EXPORT_QUEUE.EXPORT_TYPE, job.exportType())
         .set(EXPORT_QUEUE.HASHED_PARAMS, job.hashedParameters())
+        .set(EXPORT_QUEUE.DESTINATION_EMAIL, job.destinationEmail())
         .execute();
   }
 
