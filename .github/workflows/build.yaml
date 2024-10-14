@@ -54,22 +54,6 @@ jobs:
           format: 'table'
           ignore-unfixed: true
           vuln-type: 'os,library'
-      - name: Download and extract the Trivy vulnerability DB
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
-          oras pull ghcr.io/aquasecurity/trivy-db:2
-          tar -xzf db.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/db
-          rm db.tar.gz
-      - name: Download and Extract the Trivy java DB
-        run:  mkdir -p $GITHUB_WORKSPACE/.cache/trivy/java-db
-          oras pull ghcr.io/aquasecurity/trivy-java-db:1
-          tar -xzf javadb.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/java-db
-          rm javadb.tar.gz
-      - name: Cache trivy db
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ github.workspace }}/.cache/trivy
-          key: cache-trivy-${{ steps.date.outputs.date }}
         env:
           TRIVY_SKIP_DB_UPDATE: true
           TRIVY_SKIP_JAVA_DB_UPDATE: true
