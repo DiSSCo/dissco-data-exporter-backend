@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
+import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import java.time.Instant;
 import java.util.UUID;
@@ -41,6 +42,15 @@ public class DataExporterRepository {
         .set(EXPORT_QUEUE.JOB_STATE, JobState.RUNNING)
         .set(EXPORT_QUEUE.TIME_STARTED, Instant.now())
         .where(EXPORT_QUEUE.ID.eq(id))
+        .execute();
+  }
+
+  public void markJobAsComplete(JobResult jobResult){
+    context.update(EXPORT_QUEUE)
+        .set(EXPORT_QUEUE.JOB_STATE, JobState.COMPLETED)
+        .set(EXPORT_QUEUE.TIME_COMPLETED, Instant.now())
+        .set(EXPORT_QUEUE.S3_LINK, jobResult.s3Link())
+        .where(EXPORT_QUEUE.ID.eq(jobResult.id()))
         .execute();
   }
 

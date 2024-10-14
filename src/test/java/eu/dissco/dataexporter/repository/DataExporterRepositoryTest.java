@@ -3,6 +3,7 @@ package eu.dissco.dataexporter.repository;
 import static eu.dissco.dataexporter.database.jooq.Tables.EXPORT_QUEUE;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
+import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +60,23 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     // Then
     assertThat(result.timeStarted()).isNotNull();
     assertThat(result.jobState()).isEqualTo(JobState.RUNNING);
+  }
+
+  @Test
+  void testMarkJobAsComplete() throws Exception {
+    // Given
+    repository.addJobToQueue(givenScheduledJob());
+
+    // When
+    repository.markJobAsComplete(givenJobResult());
+    var result = context.select(EXPORT_QUEUE.asterisk())
+        .from(EXPORT_QUEUE)
+        .where(EXPORT_QUEUE.ID.eq(ID))
+        .fetchOne(DataExporterRepositoryTest::recordToJob);
+
+    // Then
+    assertThat(result.timeCompleted()).isNotNull();
+    assertThat(result.jobState()).isEqualTo(JobState.COMPLETED);
   }
 
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
+import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import eu.dissco.dataexporter.schema.ExportJobRequest;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class DataExporterService {
 
   private final DataExporterRepository repository;
+  private final AwsEmailService emailService;
   private final ObjectMapper mapper;
   private final MessageDigest messageDigest;
 
@@ -46,6 +48,11 @@ public class DataExporterService {
 
   public void markJobAsRunning(UUID id){
     repository.markJobAsRunning(id);
+  }
+
+  public void markJobAsComplete(JobResult jobResult){
+    emailService.sendMail(jobResult);
+    repository.markJobAsComplete(jobResult);
   }
 
   private UUID hashParams(JsonNode params) throws InvalidRequestException {

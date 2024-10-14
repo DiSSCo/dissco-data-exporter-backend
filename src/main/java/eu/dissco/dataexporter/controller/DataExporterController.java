@@ -1,5 +1,6 @@
 package eu.dissco.dataexporter.controller;
 
+import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.exception.ForbiddenException;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.schema.ExportJobRequest;
@@ -8,6 +9,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -40,7 +42,13 @@ public class DataExporterController {
     service.markJobAsRunning(id);
     log.info("Successfully marked job {} as running", id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
 
+  @PostMapping(value ="/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> completeJob(@RequestBody JobResult jobResult) {
+    service.markJobAsComplete(jobResult);
+    log.info("Successfully marked job {} as complete", jobResult.id());
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   private static String getOrcid(Authentication authentication) throws ForbiddenException {

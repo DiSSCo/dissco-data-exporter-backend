@@ -3,6 +3,7 @@ package eu.dissco.dataexporter.controller;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.givenClaims;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
+import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.BDDMockito.given;
@@ -50,6 +51,17 @@ class DataExporterControllerTest {
   void testMarkJobAsRunning() {
     // When
     var result = controller.markJobAsRunning(ID);
+
+    // Then
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  void testMarkJobComplete(){
+    // Given
+
+    // When
+    var result = controller.completeJob(givenJobResult());
 
     // Then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);

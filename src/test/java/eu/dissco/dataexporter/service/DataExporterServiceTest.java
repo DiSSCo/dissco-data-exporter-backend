@@ -6,6 +6,7 @@ import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
+import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -31,6 +32,8 @@ class DataExporterServiceTest {
 
   @Mock
   private DataExporterRepository repository;
+  @Mock
+  private AwsEmailService emailService;
 
   private DataExporterService service;
 
@@ -41,14 +44,15 @@ class DataExporterServiceTest {
   void setup() {
     initTime();
     try {
-      service = new DataExporterService(repository, MAPPER, MessageDigest.getInstance("MD5"));
+      service = new DataExporterService(repository, emailService, MAPPER,
+          MessageDigest.getInstance("MD5"));
     } catch (NoSuchAlgorithmException e) {
       throw new IllegalStateException();
     }
   }
 
   @AfterEach
-  void destroy(){
+  void destroy() {
     mockedStatic.close();
     mockedClock.close();
   }
@@ -70,7 +74,7 @@ class DataExporterServiceTest {
   }
 
   @Test
-  void testMarkJobAsRunning(){
+  void testMarkJobAsRunning() {
     // Given
 
     // When
@@ -78,6 +82,19 @@ class DataExporterServiceTest {
 
     // Then
     then(repository).should().markJobAsRunning(ID);
+  }
+
+  @Test
+  void testMarkJobAsComplete() {
+    // Given
+    var jobResult = givenJobResult();
+
+    // When
+    service.markJobAsComplete(jobResult);
+
+    // Then
+    then(emailService).should().sendMail(jobResult);
+    then(repository).should().markJobAsComplete(jobResult);
   }
 
   private void initTime() {
