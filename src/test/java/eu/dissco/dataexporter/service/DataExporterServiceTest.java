@@ -1,0 +1,75 @@
+package eu.dissco.dataexporter.service;
+
+import static eu.dissco.dataexporter.utils.TestUtils.CREATED;
+import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
+import static eu.dissco.dataexporter.utils.TestUtils.ID;
+import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
+import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
+import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
+import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mockStatic;
+
+import eu.dissco.dataexporter.repository.DataExporterRepository;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class DataExporterServiceTest {
+
+  @Mock
+  private DataExporterRepository repository;
+
+  private DataExporterService service;
+
+  private MockedStatic<Instant> mockedStatic;
+  private MockedStatic<Clock> mockedClock;
+
+  @BeforeEach
+  void setup() {
+    initTime();
+    try {
+      service = new DataExporterService(repository, MAPPER, MessageDigest.getInstance("MD5"));
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Test
+  void testScheduleJob() throws Exception {
+
+    try (var mockedUuid = mockStatic(UUID.class)) {
+      // Given
+      mockedUuid.when(UUID::randomUUID).thenReturn(ID);
+      mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
+
+      // When
+      service.addJobToQueue(givenJobRequest(), ORCID);
+
+      // Then
+      then(repository).should().addJobToQueue(givenScheduledJob());
+    }
+  }
+
+  private void initTime() {
+    Clock clock = Clock.fixed(CREATED, ZoneOffset.UTC);
+    mockedClock = mockStatic(Clock.class);
+    mockedClock.when(Clock::systemUTC).thenReturn(clock);
+    Instant instant = Instant.now(clock);
+    mockedStatic = mockStatic(Instant.class);
+    mockedStatic.when(Instant::now).thenReturn(instant);
+    mockedStatic.when(() -> Instant.from(any())).thenReturn(instant);
+  }
+
+}

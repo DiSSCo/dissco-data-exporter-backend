@@ -5,9 +5,10 @@ package eu.dissco.dataexporter.database.jooq.tables.records;
 
 
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.jooq.JSONB;
@@ -67,57 +68,57 @@ public class ExportQueueRecord extends TableRecordImpl<ExportQueueRecord> {
     /**
      * Setter for <code>public.export_queue.job_state</code>.
      */
-    public void setJobState(Object value) {
+    public void setJobState(JobState value) {
         set(3, value);
     }
 
     /**
      * Getter for <code>public.export_queue.job_state</code>.
      */
-    public Object getJobState() {
-        return get(3);
+    public JobState getJobState() {
+        return (JobState) get(3);
     }
 
     /**
      * Setter for <code>public.export_queue.time_scheduled</code>.
      */
-    public void setTimeScheduled(LocalDate value) {
+    public void setTimeScheduled(Instant value) {
         set(4, value);
     }
 
     /**
      * Getter for <code>public.export_queue.time_scheduled</code>.
      */
-    public LocalDate getTimeScheduled() {
-        return (LocalDate) get(4);
+    public Instant getTimeScheduled() {
+        return (Instant) get(4);
     }
 
     /**
      * Setter for <code>public.export_queue.time_started</code>.
      */
-    public void setTimeStarted(LocalDate value) {
+    public void setTimeStarted(Instant value) {
         set(5, value);
     }
 
     /**
      * Getter for <code>public.export_queue.time_started</code>.
      */
-    public LocalDate getTimeStarted() {
-        return (LocalDate) get(5);
+    public Instant getTimeStarted() {
+        return (Instant) get(5);
     }
 
     /**
      * Setter for <code>public.export_queue.time_completed</code>.
      */
-    public void setTimeCompleted(LocalDate value) {
+    public void setTimeCompleted(Instant value) {
         set(6, value);
     }
 
     /**
      * Getter for <code>public.export_queue.time_completed</code>.
      */
-    public LocalDate getTimeCompleted() {
-        return (LocalDate) get(6);
+    public Instant getTimeCompleted() {
+        return (Instant) get(6);
     }
 
     /**
@@ -162,7 +163,7 @@ public class ExportQueueRecord extends TableRecordImpl<ExportQueueRecord> {
     /**
      * Create a detached, initialised ExportQueueRecord
      */
-    public ExportQueueRecord(UUID id, JSONB params, String creator, Object jobState, LocalDate timeScheduled, LocalDate timeStarted, LocalDate timeCompleted, ExportType exportType, UUID hashedParams) {
+    public ExportQueueRecord(UUID id, JSONB params, String creator, JobState jobState, Instant timeScheduled, Instant timeStarted, Instant timeCompleted, ExportType exportType, UUID hashedParams) {
         super(ExportQueue.EXPORT_QUEUE);
 
         setId(id);
