@@ -7,6 +7,7 @@ import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
 import eu.dissco.dataexporter.domain.JobResult;
+import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import eu.dissco.dataexporter.schema.ExportJobRequest;
@@ -27,21 +28,21 @@ public class DataExporterService {
   private final ObjectMapper mapper;
   private final MessageDigest messageDigest;
 
-  public void addJobToQueue(ExportJobRequest jobRequest, String orcid)
+  public void addJobToQueue(ExportJobRequest jobRequest, User user)
       throws InvalidRequestException {
     var timestamp = Instant.now();
     var params = mapper.valueToTree(jobRequest.getData().getAttributes().getParams().getAdditionalProperties());
     var job = new ExportJob(
         UUID.randomUUID(),
         params,
-        orcid,
+        user.orcid(),
         JobState.SCHEDULED,
         timestamp,
         null,
         null,
         ExportType.valueOf(jobRequest.getData().getAttributes().getExportType().toString()),
         hashParams(params),
-        jobRequest.getData().getAttributes().getDestinationEmail()
+        user.email()
     );
     repository.addJobToQueue(job);
   }

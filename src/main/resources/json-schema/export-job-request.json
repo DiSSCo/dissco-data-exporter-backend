@@ -21,10 +21,6 @@
             "exportType": {
               "enum": ["doi_list"],
               "description": "Type of export job. Currently, only one kind of job is supported"
-            },
-            "destinationEmail": {
-              "type": "string",
-              "description": "email address the result of the job should be sent to"
             }
           },
           "additionalProperties": false,
