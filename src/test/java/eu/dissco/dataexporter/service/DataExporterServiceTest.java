@@ -4,9 +4,9 @@ import static eu.dissco.dataexporter.utils.TestUtils.CREATED;
 import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
-import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
+import static eu.dissco.dataexporter.utils.TestUtils.givenUser;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mockStatic;
@@ -62,7 +62,7 @@ class DataExporterServiceTest {
       mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
 
       // When
-      service.addJobToQueue(givenJobRequest(), ORCID);
+      service.addJobToQueue(givenJobRequest(), givenUser());
 
       // Then
       then(repository).should().addJobToQueue(givenScheduledJob());

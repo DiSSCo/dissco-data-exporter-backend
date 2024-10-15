@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
+import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.schema.Attributes;
 import eu.dissco.dataexporter.schema.Attributes.ExportType;
 import eu.dissco.dataexporter.schema.Data;
@@ -42,7 +43,9 @@ public class TestUtils {
   }
 
   public static Map<String, Object> givenClaims() {
-    return Map.of("orcid", ORCID);
+    return Map.of(
+        "orcid", ORCID,
+        "email", EMAIL);
   }
 
   public static ExportJobRequest givenJobRequest() {
@@ -50,8 +53,7 @@ public class TestUtils {
         .withType("export-job")
         .withAttributes(new Attributes()
             .withExportType(ExportType.DOI_LIST)
-            .withParams(givenParams())
-            .withDestinationEmail(EMAIL)));
+            .withParams(givenParams())));
 
   }
 
@@ -77,5 +79,9 @@ public class TestUtils {
         HASHED_PARAMS,
         EMAIL
     );
+  }
+
+  public static User givenUser(){
+    return new User(ORCID, EMAIL);
   }
 }

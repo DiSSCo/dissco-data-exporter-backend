@@ -1,5 +1,6 @@
 package eu.dissco.dataexporter.controller;
 
+import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.ForbiddenException;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.schema.ExportJobRequest;
@@ -29,8 +30,8 @@ public class DataExporterController {
   public ResponseEntity<Void> scheduleJob(Authentication authentication,
       @RequestBody ExportJobRequest request)
       throws ForbiddenException, InvalidRequestException {
-    var orcid = getOrcid(authentication);
-    service.addJobToQueue(request, orcid);
+    var user = getUser(authentication);
+    service.addJobToQueue(request, user);
     log.info("Successfully posted job to queue");
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
@@ -43,13 +44,13 @@ public class DataExporterController {
 
   }
 
-  private static String getOrcid(Authentication authentication) throws ForbiddenException {
+  private static User getUser(Authentication authentication) throws ForbiddenException {
     var claims = ((Jwt) authentication.getPrincipal()).getClaims();
-    if (claims.containsKey("orcid")) {
-      return (String) claims.get("orcid");
+    if (claims.containsKey("orcid") && claims.containsKey("email")) {
+      return new User((String) claims.get("orcid"), (String) claims.get("email"));
     } else {
-      log.error("Missing ORCID in token");
-      throw new ForbiddenException("No ORCID provided");
+      log.error("Missing ORCID or email in token");
+      throw new ForbiddenException("Missing ORCID or email");
     }
   }
 
