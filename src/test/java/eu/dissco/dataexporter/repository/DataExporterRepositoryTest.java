@@ -1,6 +1,7 @@
 package eu.dissco.dataexporter.repository;
 
 import static eu.dissco.dataexporter.database.jooq.Tables.EXPORT_QUEUE;
+import static eu.dissco.dataexporter.utils.TestUtils.EMAIL;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
@@ -78,6 +79,18 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     // Then
     assertThat(result.timeCompleted()).isNotNull();
     assertThat(result.jobState()).isEqualTo(jobState);
+  }
+
+  @Test
+  void testGetEmailFromJobId() throws Exception {
+    // Given
+    repository.addJobToQueue(givenScheduledJob());
+
+    // When
+    var result = repository.getUserEmailFromJobId(ID);
+
+    // Then
+    assertThat(result).isEqualTo(EMAIL);
   }
 
 

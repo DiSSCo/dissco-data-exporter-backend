@@ -59,7 +59,7 @@ public class DataExporterRepository {
     return context.select(EXPORT_QUEUE.DESTINATION_EMAIL)
         .from(EXPORT_QUEUE)
         .where(EXPORT_QUEUE.ID.eq(id))
-        .fetchOne(String::valueOf);
+        .fetchOne(EXPORT_QUEUE.DESTINATION_EMAIL);
   }
 
   private JSONB mapToJSONB(JsonNode params) throws InvalidRequestException {
