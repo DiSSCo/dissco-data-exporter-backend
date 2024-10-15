@@ -33,6 +33,7 @@ public class TestUtils {
   public static final String EMAIL = "example.email@gmail.com";
   public static final UUID HASHED_PARAMS = UUID.fromString("cdecac99-021f-54a6-7656-cfbdc59059b4");
   public static final String S3 = "https://aws.download/s3";
+  public static final String SUBJECT = "Your DiSSCo Data Download is Ready!";
 
   static {
     var mapper = new ObjectMapper().findAndRegisterModules();
@@ -88,19 +89,6 @@ public class TestUtils {
   }
 
   public static JobResult givenJobResult() {
-    return new JobResult(ID, EMAIL, S3);
+    return new JobResult(ID, S3);
   }
-
-  public static String givenEmailMessage() {
-    return
-        """
-            Good day,
-            
-            Your DiSSCo download job is ready at the following link: https://aws.download/s3
-            
-            Warm regards,
-            The DiSSCo development team
-            """;
-  }
-
 }

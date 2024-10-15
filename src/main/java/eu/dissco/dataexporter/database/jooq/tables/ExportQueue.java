@@ -9,11 +9,9 @@ import eu.dissco.dataexporter.database.jooq.Public;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.database.jooq.tables.records.ExportQueueRecord;
-
 import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
-
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.JSONB;

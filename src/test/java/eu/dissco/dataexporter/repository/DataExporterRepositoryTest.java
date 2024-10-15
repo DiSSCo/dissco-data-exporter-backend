@@ -66,9 +66,10 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
   void testMarkJobAsComplete() throws Exception {
     // Given
     repository.addJobToQueue(givenScheduledJob());
+    var jobState = JobState.COMPLETED;
 
     // When
-    repository.markJobAsComplete(givenJobResult());
+    repository.markJobAsComplete(givenJobResult(), jobState);
     var result = context.select(EXPORT_QUEUE.asterisk())
         .from(EXPORT_QUEUE)
         .where(EXPORT_QUEUE.ID.eq(ID))
@@ -76,7 +77,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
 
     // Then
     assertThat(result.timeCompleted()).isNotNull();
-    assertThat(result.jobState()).isEqualTo(JobState.COMPLETED);
+    assertThat(result.jobState()).isEqualTo(jobState);
   }
 
 

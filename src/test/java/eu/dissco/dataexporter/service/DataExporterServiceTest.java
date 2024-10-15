@@ -1,6 +1,7 @@
 package eu.dissco.dataexporter.service;
 
 import static eu.dissco.dataexporter.utils.TestUtils.CREATED;
+import static eu.dissco.dataexporter.utils.TestUtils.EMAIL;
 import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
@@ -9,9 +10,11 @@ import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static eu.dissco.dataexporter.utils.TestUtils.givenUser;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mockStatic;
 
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,7 +36,7 @@ class DataExporterServiceTest {
   @Mock
   private DataExporterRepository repository;
   @Mock
-  private AwsEmailService emailService;
+  private EmailService emailService;
 
   private DataExporterService service;
 
@@ -88,13 +91,28 @@ class DataExporterServiceTest {
   void testMarkJobAsComplete() {
     // Given
     var jobResult = givenJobResult();
+    given(repository.getUserEmailFromJobId(ID)).willReturn(EMAIL);
+    given(emailService.sendAwsMail(jobResult.s3Link(), EMAIL)).willReturn(JobState.COMPLETED);
 
     // When
     service.markJobAsComplete(jobResult);
 
     // Then
-    then(emailService).should().sendMail(jobResult);
-    then(repository).should().markJobAsComplete(jobResult);
+    then(repository).should().markJobAsComplete(jobResult, JobState.COMPLETED);
+  }
+
+  @Test
+  void testMarkJobAsCompleteFailedToNotify() {
+    // Given
+    var jobResult = givenJobResult();
+    given(repository.getUserEmailFromJobId(ID)).willReturn(EMAIL);
+    given(emailService.sendAwsMail(jobResult.s3Link(), EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
+
+    // When
+    service.markJobAsComplete(jobResult);
+
+    // Then
+    then(repository).should().markJobAsComplete(jobResult, JobState.NOTIFICATION_FAILED);
   }
 
   private void initTime() {

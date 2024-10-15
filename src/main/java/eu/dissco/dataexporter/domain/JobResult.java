@@ -4,7 +4,6 @@ import java.util.UUID;
 
 public record JobResult(
     UUID id,
-    String destinationEmail,
     String s3Link
 ) {
 

@@ -24,14 +24,15 @@ import org.springframework.stereotype.Service;
 public class DataExporterService {
 
   private final DataExporterRepository repository;
-  private final AwsEmailService emailService;
+  private final EmailService emailService;
   private final ObjectMapper mapper;
   private final MessageDigest messageDigest;
 
   public void addJobToQueue(ExportJobRequest jobRequest, User user)
       throws InvalidRequestException {
     var timestamp = Instant.now();
-    var params = mapper.valueToTree(jobRequest.getData().getAttributes().getParams().getAdditionalProperties());
+    var params = mapper.valueToTree(
+        jobRequest.getData().getAttributes().getParams().getAdditionalProperties());
     var job = new ExportJob(
         UUID.randomUUID(),
         params,
@@ -47,20 +48,21 @@ public class DataExporterService {
     repository.addJobToQueue(job);
   }
 
-  public void markJobAsRunning(UUID id){
+  public void markJobAsRunning(UUID id) {
     repository.markJobAsRunning(id);
   }
 
-  public void markJobAsComplete(JobResult jobResult){
-    emailService.sendMail(jobResult);
-    repository.markJobAsComplete(jobResult);
+  public void markJobAsComplete(JobResult jobResult) {
+    var email = repository.getUserEmailFromJobId(jobResult.id());
+    var jobState = emailService.sendAwsMail(jobResult.s3Link(), email);
+    repository.markJobAsComplete(jobResult, jobState);
   }
 
   private UUID hashParams(JsonNode params) throws InvalidRequestException {
     var hexString = new StringBuilder();
     try {
       messageDigest.update(mapper.writeValueAsBytes(params));
-    } catch (JsonProcessingException e){
+    } catch (JsonProcessingException e) {
       log.error("Unable to parse Job params", e);
       throw new InvalidRequestException("Invalid job parameters");
     }

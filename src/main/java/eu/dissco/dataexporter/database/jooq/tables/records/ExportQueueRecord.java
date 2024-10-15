@@ -7,10 +7,8 @@ package eu.dissco.dataexporter.database.jooq.tables.records;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
-
 import java.time.Instant;
 import java.util.UUID;
-
 import org.jooq.JSONB;
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;

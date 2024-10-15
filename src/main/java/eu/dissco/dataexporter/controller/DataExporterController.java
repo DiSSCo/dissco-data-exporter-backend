@@ -1,7 +1,7 @@
 package eu.dissco.dataexporter.controller;
 
-import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.domain.JobResult;
+import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.ForbiddenException;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.schema.ExportJobRequest;

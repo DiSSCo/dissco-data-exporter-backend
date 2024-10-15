@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 @Slf4j
 @RequiredArgsConstructor
 public class DataExporterRepository {
+
   private final DSLContext context;
   private final ObjectMapper mapper;
 
@@ -37,7 +38,7 @@ public class DataExporterRepository {
         .execute();
   }
 
-  public void markJobAsRunning(UUID id){
+  public void markJobAsRunning(UUID id) {
     context.update(EXPORT_QUEUE)
         .set(EXPORT_QUEUE.JOB_STATE, JobState.RUNNING)
         .set(EXPORT_QUEUE.TIME_STARTED, Instant.now())
@@ -45,19 +46,26 @@ public class DataExporterRepository {
         .execute();
   }
 
-  public void markJobAsComplete(JobResult jobResult){
+  public void markJobAsComplete(JobResult jobResult, JobState jobState) {
     context.update(EXPORT_QUEUE)
-        .set(EXPORT_QUEUE.JOB_STATE, JobState.COMPLETED)
+        .set(EXPORT_QUEUE.JOB_STATE, jobState)
         .set(EXPORT_QUEUE.TIME_COMPLETED, Instant.now())
         .set(EXPORT_QUEUE.S3_LINK, jobResult.s3Link())
         .where(EXPORT_QUEUE.ID.eq(jobResult.id()))
         .execute();
   }
 
+  public String getUserEmailFromJobId(UUID id) {
+    return context.select(EXPORT_QUEUE.DESTINATION_EMAIL)
+        .from(EXPORT_QUEUE)
+        .where(EXPORT_QUEUE.ID.eq(id))
+        .fetchOne(String::valueOf);
+  }
+
   private JSONB mapToJSONB(JsonNode params) throws InvalidRequestException {
     try {
       return JSONB.valueOf(mapper.writeValueAsString(params));
-    } catch (JsonProcessingException e){
+    } catch (JsonProcessingException e) {
       log.error("Unable to parse params to JSONB", e);
       throw new InvalidRequestException("Unable to parse params");
     }
