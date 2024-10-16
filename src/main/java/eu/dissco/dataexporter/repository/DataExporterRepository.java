@@ -10,6 +10,7 @@ import eu.dissco.dataexporter.domain.ExportJob;
 import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,13 @@ public class DataExporterRepository {
         .set(EXPORT_QUEUE.HASHED_PARAMS, job.hashedParameters())
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, job.destinationEmail())
         .execute();
+  }
+
+  public Optional<String> getJobResultsIfExists(UUID hashedParams){
+    return context.select(EXPORT_QUEUE.S3_LINK)
+        .from(EXPORT_QUEUE)
+        .where(EXPORT_QUEUE.HASHED_PARAMS.eq(hashedParams))
+        .fetchOptional(EXPORT_QUEUE.S3_LINK);
   }
 
   public void markJobAsRunning(UUID id) {

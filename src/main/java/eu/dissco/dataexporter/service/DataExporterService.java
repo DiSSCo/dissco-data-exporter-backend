@@ -10,6 +10,7 @@ import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
+import eu.dissco.dataexporter.schema.Attributes;
 import eu.dissco.dataexporter.schema.ExportJobRequest;
 import java.security.MessageDigest;
 import java.time.Instant;
@@ -28,11 +29,30 @@ public class DataExporterService {
   private final ObjectMapper mapper;
   private final MessageDigest messageDigest;
 
-  public void addJobToQueue(ExportJobRequest jobRequest, User user)
+  public void handleJobRequest(ExportJobRequest jobRequest, User user)
       throws InvalidRequestException {
-    var timestamp = Instant.now();
     var params = mapper.valueToTree(
         jobRequest.getData().getAttributes().getParams().getAdditionalProperties());
+    var hashedParams = hashParams(params);
+    var existingS3Link = repository.getJobResultsIfExists(hashedParams);
+    if (existingS3Link.isPresent()) {
+      log.info("Job with params {} has already been executed. Notifying user.", params);
+      var result = emailService.sendAwsMail(existingS3Link.get(), user.email());
+      if (result.equals(JobState.NOTIFICATION_FAILED)) {
+        log.error("Failed to notify user of job. Scheduling separate job");
+        addJobToQueue(params, hashedParams, user,
+            jobRequest.getData().getAttributes().getExportType());
+      }
+    } else {
+      addJobToQueue(params, hashedParams, user,
+          jobRequest.getData().getAttributes().getExportType());
+    }
+  }
+
+  private void addJobToQueue(JsonNode params, UUID hashedParams, User user,
+      Attributes.ExportType exportType)
+      throws InvalidRequestException {
+    var timestamp = Instant.now();
     var job = new ExportJob(
         UUID.randomUUID(),
         params,
@@ -41,8 +61,8 @@ public class DataExporterService {
         timestamp,
         null,
         null,
-        ExportType.valueOf(jobRequest.getData().getAttributes().getExportType().toString()),
-        hashParams(params),
+        ExportType.valueOf(exportType.toString()),
+        hashedParams,
         user.email()
     );
     repository.addJobToQueue(job);

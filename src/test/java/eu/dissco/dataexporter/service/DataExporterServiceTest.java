@@ -5,6 +5,7 @@ import static eu.dissco.dataexporter.utils.TestUtils.EMAIL;
 import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
+import static eu.dissco.dataexporter.utils.TestUtils.S3;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
@@ -21,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,15 +63,49 @@ class DataExporterServiceTest {
   }
 
   @Test
-  void testScheduleJob() throws Exception {
-
+  void testScheduleNewJob() throws Exception {
     try (var mockedUuid = mockStatic(UUID.class)) {
       // Given
       mockedUuid.when(UUID::randomUUID).thenReturn(ID);
       mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
+      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.empty());
 
       // When
-      service.addJobToQueue(givenJobRequest(), givenUser());
+      service.handleJobRequest(givenJobRequest(), givenUser());
+
+      // Then
+      then(repository).should().addJobToQueue(givenScheduledJob());
+    }
+  }
+
+  @Test
+  void testScheduledJobHasBeenExecuted() throws Exception {
+    try (var mockedUuid = mockStatic(UUID.class)) {
+      // Given
+      mockedUuid.when(UUID::randomUUID).thenReturn(ID);
+      mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
+      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(S3));
+      given(emailService.sendAwsMail(S3, EMAIL)).willReturn(JobState.COMPLETED);
+
+      // When
+      service.handleJobRequest(givenJobRequest(), givenUser());
+
+      // Then
+      then(repository).shouldHaveNoMoreInteractions();
+    }
+  }
+
+  @Test
+  void testScheduledJobHasBeenExecutedEmailFailed() throws Exception {
+    try (var mockedUuid = mockStatic(UUID.class)) {
+      // Given
+      mockedUuid.when(UUID::randomUUID).thenReturn(ID);
+      mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
+      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(S3));
+      given(emailService.sendAwsMail(S3, EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
+
+      // When
+      service.handleJobRequest(givenJobRequest(), givenUser());
 
       // Then
       then(repository).should().addJobToQueue(givenScheduledJob());

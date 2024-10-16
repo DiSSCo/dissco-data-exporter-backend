@@ -48,7 +48,7 @@ class DataExporterControllerTest {
     var result = controller.scheduleJob(authentication, givenJobRequest());
 
     // Then
-    then(service).should().addJobToQueue(givenJobRequest(), givenUser());
+    then(service).should().handleJobRequest(givenJobRequest(), givenUser());
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
   }
 

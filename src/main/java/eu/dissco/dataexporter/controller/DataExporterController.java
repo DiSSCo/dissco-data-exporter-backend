@@ -33,7 +33,7 @@ public class DataExporterController {
       @RequestBody ExportJobRequest request)
       throws ForbiddenException, InvalidRequestException {
     var user = getUser(authentication);
-    service.addJobToQueue(request, user);
+    service.handleJobRequest(request, user);
     log.info("Successfully posted job to queue");
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
