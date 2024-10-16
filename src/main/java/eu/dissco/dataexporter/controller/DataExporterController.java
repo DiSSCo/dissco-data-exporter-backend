@@ -36,7 +36,7 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 
-  @PostMapping("/{id}/running")
+  @PostMapping("/internal/{id}/running")
   public ResponseEntity<Void> markJobAsRunning(@PathVariable("id") UUID id) {
     service.markJobAsRunning(id);
     log.info("Successfully marked job {} as running", id);
