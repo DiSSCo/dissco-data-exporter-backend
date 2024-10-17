@@ -39,6 +39,13 @@ public class DataExporterRepository {
         .execute();
   }
 
+  public Integer getRunningJobs(){
+    return context.selectCount()
+        .from(EXPORT_QUEUE)
+        .where(EXPORT_QUEUE.JOB_STATE.eq(JobState.RUNNING))
+        .fetchOne(0, Integer.class);
+  }
+
   public Optional<String> getJobResultsIfExists(UUID hashedParams){
     return context.select(EXPORT_QUEUE.S3_LINK)
         .from(EXPORT_QUEUE)
