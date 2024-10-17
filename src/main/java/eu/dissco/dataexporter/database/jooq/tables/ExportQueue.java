@@ -9,9 +9,11 @@ import eu.dissco.dataexporter.database.jooq.Public;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.database.jooq.tables.records.ExportQueueRecord;
+
 import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
+
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.JSONB;
@@ -103,9 +105,9 @@ public class ExportQueue extends TableImpl<ExportQueueRecord> {
     public final TableField<ExportQueueRecord, String> DESTINATION_EMAIL = createField(DSL.name("destination_email"), SQLDataType.CLOB.nullable(false), this, "");
 
     /**
-     * The column <code>public.export_queue.s3_link</code>.
+     * The column <code>public.export_queue.download_link</code>.
      */
-    public final TableField<ExportQueueRecord, String> S3_LINK = createField(DSL.name("s3_link"), SQLDataType.CLOB, this, "");
+    public final TableField<ExportQueueRecord, String> DOWNLOAD_LINK = createField(DSL.name("download_link"), SQLDataType.CLOB, this, "");
 
     private ExportQueue(Name alias, Table<ExportQueueRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

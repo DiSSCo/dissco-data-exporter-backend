@@ -74,7 +74,7 @@ public class DataExporterService {
 
   public void markJobAsComplete(JobResult jobResult) {
     var email = repository.getUserEmailFromJobId(jobResult.id());
-    var jobState = emailService.sendAwsMail(jobResult.s3Link(), email);
+    var jobState = emailService.sendAwsMail(jobResult.downloadLink(), email);
     repository.markJobAsComplete(jobResult, jobState);
   }
 

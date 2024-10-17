@@ -32,7 +32,7 @@ public class TestUtils {
   public static final String ORCID = "https://orcid.org/0000-0001-7573-4330";
   public static final String EMAIL = "example.email@gmail.com";
   public static final UUID HASHED_PARAMS = UUID.fromString("cdecac99-021f-54a6-7656-cfbdc59059b4");
-  public static final String S3 = "https://aws.download/s3";
+  public static final String DOWNLOAD_LINK = "https://aws.download/s3";
   public static final String SUBJECT = "Your DiSSCo Data Download is Ready!";
 
   static {
@@ -89,6 +89,6 @@ public class TestUtils {
   }
 
   public static JobResult givenJobResult() {
-    return new JobResult(ID, S3);
+    return new JobResult(ID, DOWNLOAD_LINK);
   }
 }

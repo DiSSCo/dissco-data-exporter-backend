@@ -40,10 +40,10 @@ public class DataExporterRepository {
   }
 
   public Optional<String> getJobResultsIfExists(UUID hashedParams){
-    return context.select(EXPORT_QUEUE.S3_LINK)
+    return context.select(EXPORT_QUEUE.DOWNLOAD_LINK)
         .from(EXPORT_QUEUE)
         .where(EXPORT_QUEUE.HASHED_PARAMS.eq(hashedParams))
-        .fetchOptional(EXPORT_QUEUE.S3_LINK);
+        .fetchOptional(EXPORT_QUEUE.DOWNLOAD_LINK);
   }
 
   public void updateJobState(UUID id, JobState jobState) {
@@ -58,7 +58,7 @@ public class DataExporterRepository {
     context.update(EXPORT_QUEUE)
         .set(EXPORT_QUEUE.JOB_STATE, jobState)
         .set(EXPORT_QUEUE.TIME_COMPLETED, Instant.now())
-        .set(EXPORT_QUEUE.S3_LINK, jobResult.s3Link())
+        .set(EXPORT_QUEUE.DOWNLOAD_LINK, jobResult.downloadLink())
         .where(EXPORT_QUEUE.ID.eq(jobResult.id()))
         .execute();
   }

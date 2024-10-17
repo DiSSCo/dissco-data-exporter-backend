@@ -5,8 +5,10 @@ package eu.dissco.dataexporter.database.jooq;
 
 
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
+
 import java.util.Arrays;
 import java.util.List;
+
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;

@@ -43,7 +43,7 @@ public class DataExporterController {
   public ResponseEntity<Void> updateJobState(@PathVariable("id") UUID id,
       @PathVariable("jobState") String jobStateStr) throws InvalidRequestException {
     service.updateJobState(id, getJobState(jobStateStr));
-    log.info("Successfully marked job {} as running", id);
+    log.info("Successfully marked job {} as {}", id, jobStateStr);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 

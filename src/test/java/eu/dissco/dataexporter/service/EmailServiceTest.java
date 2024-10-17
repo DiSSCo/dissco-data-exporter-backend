@@ -37,7 +37,7 @@ class EmailServiceTest {
     var expected = givenEmailRequest();
 
     // When
-    emailService.sendAwsMail(jobResult.s3Link(), EMAIL);
+    emailService.sendAwsMail(jobResult.downloadLink(), EMAIL);
 
     // Then
     then(emailClient).should().sendEmail(expected);
@@ -49,7 +49,7 @@ class EmailServiceTest {
     given(emailClient.sendEmail(givenEmailRequest())).willThrow(SesV2Exception.class);
 
     // When
-    var result = emailService.sendAwsMail(givenJobResult().s3Link(), EMAIL);
+    var result = emailService.sendAwsMail(givenJobResult().downloadLink(), EMAIL);
 
     // Then
     assertThat(result).isEqualTo(JobState.NOTIFICATION_FAILED);

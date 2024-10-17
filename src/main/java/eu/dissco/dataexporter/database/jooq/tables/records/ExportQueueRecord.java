@@ -7,8 +7,10 @@ package eu.dissco.dataexporter.database.jooq.tables.records;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
+
 import java.time.Instant;
 import java.util.UUID;
+
 import org.jooq.JSONB;
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -163,16 +165,16 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
     }
 
     /**
-     * Setter for <code>public.export_queue.s3_link</code>.
+     * Setter for <code>public.export_queue.download_link</code>.
      */
-    public void setS3Link(String value) {
+    public void setDownloadLink(String value) {
         set(10, value);
     }
 
     /**
-     * Getter for <code>public.export_queue.s3_link</code>.
+     * Getter for <code>public.export_queue.download_link</code>.
      */
-    public String getS3Link() {
+    public String getDownloadLink() {
         return (String) get(10);
     }
 
@@ -199,7 +201,7 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
     /**
      * Create a detached, initialised ExportQueueRecord
      */
-    public ExportQueueRecord(UUID id, JSONB params, String creator, JobState jobState, Instant timeScheduled, Instant timeStarted, Instant timeCompleted, ExportType exportType, UUID hashedParams, String destinationEmail, String s3Link) {
+    public ExportQueueRecord(UUID id, JSONB params, String creator, JobState jobState, Instant timeScheduled, Instant timeStarted, Instant timeCompleted, ExportType exportType, UUID hashedParams, String destinationEmail, String downloadLink) {
         super(ExportQueue.EXPORT_QUEUE);
 
         setId(id);
@@ -212,7 +214,7 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
         setExportType(exportType);
         setHashedParams(hashedParams);
         setDestinationEmail(destinationEmail);
-        setS3Link(s3Link);
+        setDownloadLink(downloadLink);
         resetChangedOnNotNull();
     }
 }

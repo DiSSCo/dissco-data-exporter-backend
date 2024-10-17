@@ -15,6 +15,6 @@ create table export_queue
     export_type       export_type              not null,
     hashed_params     uuid                     not null,
     destination_email text                     not null,
-    s3_link           text
+    download_link           text
 );
 

@@ -80,8 +80,6 @@ class DataExporterControllerTest {
 
   @Test
   void testMarkJobComplete() {
-    // Given
-
     // When
     var result = controller.completeJob(givenJobResult());
 
