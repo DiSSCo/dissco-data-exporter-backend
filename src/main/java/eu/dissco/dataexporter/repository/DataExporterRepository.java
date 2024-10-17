@@ -46,9 +46,9 @@ public class DataExporterRepository {
         .fetchOptional(EXPORT_QUEUE.S3_LINK);
   }
 
-  public void markJobAsRunning(UUID id) {
+  public void updateJobState(UUID id, JobState jobState) {
     context.update(EXPORT_QUEUE)
-        .set(EXPORT_QUEUE.JOB_STATE, JobState.RUNNING)
+        .set(EXPORT_QUEUE.JOB_STATE, jobState)
         .set(EXPORT_QUEUE.TIME_STARTED, Instant.now())
         .where(EXPORT_QUEUE.ID.eq(id))
         .execute();

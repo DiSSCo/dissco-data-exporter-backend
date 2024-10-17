@@ -68,8 +68,8 @@ public class DataExporterService {
     repository.addJobToQueue(job);
   }
 
-  public void markJobAsRunning(UUID id) {
-    repository.markJobAsRunning(id);
+  public void updateJobState(UUID id, JobState jobState) {
+    repository.updateJobState(id, jobState);
   }
 
   public void markJobAsComplete(JobResult jobResult) {

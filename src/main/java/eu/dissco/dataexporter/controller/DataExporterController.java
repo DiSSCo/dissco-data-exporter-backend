@@ -1,5 +1,6 @@
 package eu.dissco.dataexporter.controller;
 
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.ForbiddenException;
@@ -38,14 +39,15 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 
-  @PostMapping("/internal/{id}/running")
-  public ResponseEntity<Void> markJobAsRunning(@PathVariable("id") UUID id) {
-    service.markJobAsRunning(id);
+  @PostMapping("/internal/{id}/{jobState}")
+  public ResponseEntity<Void> updateJobState(@PathVariable("id") UUID id,
+      @PathVariable("jobState") String jobStateStr) throws InvalidRequestException {
+    service.updateJobState(id, getJobState(jobStateStr));
     log.info("Successfully marked job {} as running", id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
-  @PostMapping(value ="/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/internal/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> completeJob(@RequestBody JobResult jobResult) {
     service.markJobAsComplete(jobResult);
     log.info("Successfully marked job {} as complete", jobResult.id());
@@ -60,6 +62,16 @@ public class DataExporterController {
       log.error("Missing ORCID or email in token");
       throw new ForbiddenException("Missing ORCID or email");
     }
+  }
+
+  private static JobState getJobState(String jobStateStr) throws InvalidRequestException {
+    if (jobStateStr.equals("running")) {
+      return JobState.RUNNING;
+    } else if (jobStateStr.equals("failed")) {
+      return JobState.FAILED;
+    }
+    log.error("Job state {} is not recognized", jobStateStr);
+    throw new InvalidRequestException("Invalid job state :" + jobStateStr);
   }
 
 }

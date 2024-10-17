@@ -54,12 +54,12 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
   }
 
   @Test
-  void testMarkJobAsRunning() throws Exception {
+  void testUpdateJobState() throws Exception {
     // Given
     repository.addJobToQueue(givenScheduledJob());
 
     // When
-    repository.markJobAsRunning(ID);
+    repository.updateJobState(ID, JobState.RUNNING);
     var result = context.select(EXPORT_QUEUE.asterisk())
         .from(EXPORT_QUEUE)
         .where(EXPORT_QUEUE.ID.eq(ID))

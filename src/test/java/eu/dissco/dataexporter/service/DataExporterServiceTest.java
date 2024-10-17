@@ -113,14 +113,14 @@ class DataExporterServiceTest {
   }
 
   @Test
-  void testMarkJobAsRunning() {
+  void testUpdateJobState() {
     // Given
 
     // When
-    service.markJobAsRunning(ID);
+    service.updateJobState(ID, JobState.RUNNING);
 
     // Then
-    then(repository).should().markJobAsRunning(ID);
+    then(repository).should().updateJobState(ID, JobState.RUNNING);
   }
 
   @Test
