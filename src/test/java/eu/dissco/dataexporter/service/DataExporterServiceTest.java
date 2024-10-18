@@ -5,7 +5,7 @@ import static eu.dissco.dataexporter.utils.TestUtils.EMAIL;
 import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
-import static eu.dissco.dataexporter.utils.TestUtils.S3;
+import static eu.dissco.dataexporter.utils.TestUtils.DOWNLOAD_LINK;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
@@ -84,8 +84,8 @@ class DataExporterServiceTest {
       // Given
       mockedUuid.when(UUID::randomUUID).thenReturn(ID);
       mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
-      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(S3));
-      given(emailService.sendAwsMail(S3, EMAIL)).willReturn(JobState.COMPLETED);
+      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(DOWNLOAD_LINK));
+      given(emailService.sendAwsMail(DOWNLOAD_LINK, EMAIL)).willReturn(JobState.COMPLETED);
 
       // When
       service.handleJobRequest(givenJobRequest(), givenUser());
@@ -101,8 +101,8 @@ class DataExporterServiceTest {
       // Given
       mockedUuid.when(UUID::randomUUID).thenReturn(ID);
       mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
-      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(S3));
-      given(emailService.sendAwsMail(S3, EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
+      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(DOWNLOAD_LINK));
+      given(emailService.sendAwsMail(DOWNLOAD_LINK, EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
 
       // When
       service.handleJobRequest(givenJobRequest(), givenUser());
@@ -128,7 +128,7 @@ class DataExporterServiceTest {
     // Given
     var jobResult = givenJobResult();
     given(repository.getUserEmailFromJobId(ID)).willReturn(EMAIL);
-    given(emailService.sendAwsMail(jobResult.s3Link(), EMAIL)).willReturn(JobState.COMPLETED);
+    given(emailService.sendAwsMail(jobResult.downloadLink(), EMAIL)).willReturn(JobState.COMPLETED);
 
     // When
     service.markJobAsComplete(jobResult);
@@ -142,7 +142,7 @@ class DataExporterServiceTest {
     // Given
     var jobResult = givenJobResult();
     given(repository.getUserEmailFromJobId(ID)).willReturn(EMAIL);
-    given(emailService.sendAwsMail(jobResult.s3Link(), EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
+    given(emailService.sendAwsMail(jobResult.downloadLink(), EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
 
     // When
     service.markJobAsComplete(jobResult);

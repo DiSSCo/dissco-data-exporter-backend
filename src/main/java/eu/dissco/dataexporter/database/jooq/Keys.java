@@ -6,6 +6,7 @@ package eu.dissco.dataexporter.database.jooq;
 
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
 import eu.dissco.dataexporter.database.jooq.tables.records.ExportQueueRecord;
+
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;

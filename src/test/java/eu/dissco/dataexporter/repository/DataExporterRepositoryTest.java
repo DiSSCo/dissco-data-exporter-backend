@@ -7,7 +7,7 @@ import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
-import static eu.dissco.dataexporter.utils.TestUtils.S3;
+import static eu.dissco.dataexporter.utils.TestUtils.DOWNLOAD_LINK;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenParams;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
@@ -112,14 +112,14 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         .set(EXPORT_QUEUE.HASHED_PARAMS, HASHED_PARAMS)
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
         .set(EXPORT_QUEUE.JOB_STATE, JobState.COMPLETED)
-        .set(EXPORT_QUEUE.S3_LINK, S3)
+        .set(EXPORT_QUEUE.DOWNLOAD_LINK, DOWNLOAD_LINK)
         .execute();
 
     // When
     var result = repository.getJobResultsIfExists(HASHED_PARAMS);
 
     // Then
-    assertThat(result).contains(S3);
+    assertThat(result).contains(DOWNLOAD_LINK);
   }
 
 

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("")
+@RequestMapping("/data-export")
 @Slf4j
 @RequiredArgsConstructor
 public class DataExporterController {
@@ -43,7 +43,7 @@ public class DataExporterController {
   public ResponseEntity<Void> updateJobState(@PathVariable("id") UUID id,
       @PathVariable("jobState") String jobStateStr) throws InvalidRequestException {
     service.updateJobState(id, getJobState(jobStateStr));
-    log.info("Successfully marked job {} as running", id);
+    log.info("Successfully marked job {} as {}", id, jobStateStr);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
