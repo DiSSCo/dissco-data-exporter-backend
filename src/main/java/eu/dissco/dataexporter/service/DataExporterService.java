@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
+import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
+import eu.dissco.dataexporter.schema.Attributes;
 import eu.dissco.dataexporter.schema.ExportJobRequest;
 import java.security.MessageDigest;
 import java.time.Instant;
@@ -23,13 +25,34 @@ import org.springframework.stereotype.Service;
 public class DataExporterService {
 
   private final DataExporterRepository repository;
+  private final EmailService emailService;
   private final ObjectMapper mapper;
   private final MessageDigest messageDigest;
 
-  public void addJobToQueue(ExportJobRequest jobRequest, User user)
+  public void handleJobRequest(ExportJobRequest jobRequest, User user)
+      throws InvalidRequestException {
+    var params = mapper.valueToTree(
+        jobRequest.getData().getAttributes().getParams().getAdditionalProperties());
+    var hashedParams = hashParams(params);
+    var existingS3Link = repository.getJobResultsIfExists(hashedParams);
+    if (existingS3Link.isPresent()) {
+      log.info("Job with params {} has already been executed. Notifying user.", params);
+      var result = emailService.sendAwsMail(existingS3Link.get(), user.email());
+      if (result.equals(JobState.NOTIFICATION_FAILED)) {
+        log.error("Failed to notify user of job. Scheduling separate job");
+        addJobToQueue(params, hashedParams, user,
+            jobRequest.getData().getAttributes().getExportType());
+      }
+    } else {
+      addJobToQueue(params, hashedParams, user,
+          jobRequest.getData().getAttributes().getExportType());
+    }
+  }
+
+  private void addJobToQueue(JsonNode params, UUID hashedParams, User user,
+      Attributes.ExportType exportType)
       throws InvalidRequestException {
     var timestamp = Instant.now();
-    var params = mapper.valueToTree(jobRequest.getData().getAttributes().getParams().getAdditionalProperties());
     var job = new ExportJob(
         UUID.randomUUID(),
         params,
@@ -38,22 +61,28 @@ public class DataExporterService {
         timestamp,
         null,
         null,
-        ExportType.valueOf(jobRequest.getData().getAttributes().getExportType().toString()),
-        hashParams(params),
+        ExportType.valueOf(exportType.toString()),
+        hashedParams,
         user.email()
     );
     repository.addJobToQueue(job);
   }
 
-  public void markJobAsRunning(UUID id){
-    repository.markJobAsRunning(id);
+  public void updateJobState(UUID id, JobState jobState) {
+    repository.updateJobState(id, jobState);
+  }
+
+  public void markJobAsComplete(JobResult jobResult) {
+    var email = repository.getUserEmailFromJobId(jobResult.id());
+    var jobState = emailService.sendAwsMail(jobResult.downloadLink(), email);
+    repository.markJobAsComplete(jobResult, jobState);
   }
 
   private UUID hashParams(JsonNode params) throws InvalidRequestException {
     var hexString = new StringBuilder();
     try {
       messageDigest.update(mapper.writeValueAsBytes(params));
-    } catch (JsonProcessingException e){
+    } catch (JsonProcessingException e) {
       log.error("Unable to parse Job params", e);
       throw new InvalidRequestException("Invalid job parameters");
     }

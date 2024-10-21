@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
+import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.schema.Attributes;
 import eu.dissco.dataexporter.schema.Attributes.ExportType;
@@ -31,9 +32,11 @@ public class TestUtils {
   public static final String ORCID = "https://orcid.org/0000-0001-7573-4330";
   public static final String EMAIL = "example.email@gmail.com";
   public static final UUID HASHED_PARAMS = UUID.fromString("cdecac99-021f-54a6-7656-cfbdc59059b4");
+  public static final String DOWNLOAD_LINK = "https://aws.download/s3";
+  public static final String SUBJECT = "Your DiSSCo Data Download is Ready!";
 
   static {
-    var mapper =  new ObjectMapper().findAndRegisterModules();
+    var mapper = new ObjectMapper().findAndRegisterModules();
     var dateModule = new SimpleModule();
     dateModule.addSerializer(Date.class, new DateSerializer());
     dateModule.addDeserializer(Date.class, new DateDeserializer());
@@ -62,11 +65,11 @@ public class TestUtils {
         "https://ror.org/0566bfb96");
   }
 
-  public static JsonNode givenPramsJson(){
+  public static JsonNode givenPramsJson() {
     return MAPPER.valueToTree(givenParams().getAdditionalProperties());
   }
 
-  public static ExportJob givenScheduledJob(){
+  public static ExportJob givenScheduledJob() {
     return new ExportJob(
         ID,
         givenPramsJson(),
@@ -83,5 +86,9 @@ public class TestUtils {
 
   public static User givenUser(){
     return new User(ORCID, EMAIL);
+  }
+
+  public static JobResult givenJobResult() {
+    return new JobResult(ID, DOWNLOAD_LINK);
   }
 }

@@ -5,14 +5,17 @@ import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
 import static eu.dissco.dataexporter.utils.TestUtils.givenClaims;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
+import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenUser;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 import eu.dissco.dataexporter.exception.ForbiddenException;
+import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.service.DataExporterService;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,14 +50,38 @@ class DataExporterControllerTest {
     var result = controller.scheduleJob(authentication, givenJobRequest());
 
     // Then
-    then(service).should().addJobToQueue(givenJobRequest(), givenUser());
+    then(service).should().handleJobRequest(givenJobRequest(), givenUser());
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
   }
 
   @Test
-  void testMarkJobAsRunning() {
+  void testJobStateRunning() throws InvalidRequestException {
     // When
-    var result = controller.markJobAsRunning(ID);
+    var result = controller.updateJobState(ID, "running");
+
+    // Then
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  void testJobStateFailed() throws InvalidRequestException {
+    // When
+    var result = controller.updateJobState(ID, "failed");
+
+    // Then
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+  }
+
+  @Test
+  void testJobStateInvalid() {
+    // When / then
+    assertThrows(InvalidRequestException.class, () -> controller.updateJobState(ID, "invalid"));
+  }
+
+  @Test
+  void testMarkJobComplete() {
+    // When
+    var result = controller.completeJob(givenJobResult());
 
     // Then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);

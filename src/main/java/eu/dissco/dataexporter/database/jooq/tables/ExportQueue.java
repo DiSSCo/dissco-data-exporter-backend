@@ -104,6 +104,11 @@ public class ExportQueue extends TableImpl<ExportQueueRecord> {
      */
     public final TableField<ExportQueueRecord, String> DESTINATION_EMAIL = createField(DSL.name("destination_email"), SQLDataType.CLOB.nullable(false), this, "");
 
+    /**
+     * The column <code>public.export_queue.download_link</code>.
+     */
+    public final TableField<ExportQueueRecord, String> DOWNLOAD_LINK = createField(DSL.name("download_link"), SQLDataType.CLOB, this, "");
+
     private ExportQueue(Name alias, Table<ExportQueueRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }

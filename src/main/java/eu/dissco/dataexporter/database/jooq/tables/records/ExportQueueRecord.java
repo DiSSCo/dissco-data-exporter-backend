@@ -164,6 +164,20 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
         return (String) get(9);
     }
 
+    /**
+     * Setter for <code>public.export_queue.download_link</code>.
+     */
+    public void setDownloadLink(String value) {
+        set(10, value);
+    }
+
+    /**
+     * Getter for <code>public.export_queue.download_link</code>.
+     */
+    public String getDownloadLink() {
+        return (String) get(10);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -187,7 +201,7 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
     /**
      * Create a detached, initialised ExportQueueRecord
      */
-    public ExportQueueRecord(UUID id, JSONB params, String creator, JobState jobState, Instant timeScheduled, Instant timeStarted, Instant timeCompleted, ExportType exportType, UUID hashedParams, String destinationEmail) {
+    public ExportQueueRecord(UUID id, JSONB params, String creator, JobState jobState, Instant timeScheduled, Instant timeStarted, Instant timeCompleted, ExportType exportType, UUID hashedParams, String destinationEmail, String downloadLink) {
         super(ExportQueue.EXPORT_QUEUE);
 
         setId(id);
@@ -200,6 +214,7 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
         setExportType(exportType);
         setHashedParams(hashedParams);
         setDestinationEmail(destinationEmail);
+        setDownloadLink(downloadLink);
         resetChangedOnNotNull();
     }
 }

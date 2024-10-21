@@ -38,6 +38,7 @@
     </sonar.coverage.jacoco.xmlReportPaths>
     <testcontainers.version>1.19.8</testcontainers.version>
     <mockito-inline.version>5.2.0</mockito-inline.version>
+    <aws-sdk.version>2.28.21</aws-sdk.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -47,6 +48,13 @@
         <version>${testcontainers.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws-sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -92,6 +100,15 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sesv2</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

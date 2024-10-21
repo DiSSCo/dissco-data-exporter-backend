@@ -14,6 +14,7 @@ create table export_queue
     time_completed    timestamp with time zone,
     export_type       export_type              not null,
     hashed_params     uuid                     not null,
-    destination_email text                     not null
+    destination_email text                     not null,
+    download_link           text
 );
 

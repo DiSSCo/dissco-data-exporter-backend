@@ -1,5 +1,7 @@
 package eu.dissco.dataexporter.controller;
 
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
+import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.ForbiddenException;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
@@ -9,6 +11,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -19,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("")
+@RequestMapping("/data-export")
 @Slf4j
 @RequiredArgsConstructor
 public class DataExporterController {
@@ -31,17 +34,24 @@ public class DataExporterController {
       @RequestBody ExportJobRequest request)
       throws ForbiddenException, InvalidRequestException {
     var user = getUser(authentication);
-    service.addJobToQueue(request, user);
+    service.handleJobRequest(request, user);
     log.info("Successfully posted job to queue");
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 
-  @PostMapping("/internal/{id}/running")
-  public ResponseEntity<Void> markJobAsRunning(@PathVariable("id") UUID id) {
-    service.markJobAsRunning(id);
-    log.info("Successfully marked job {} as running", id);
+  @PostMapping("/internal/{id}/{jobState}")
+  public ResponseEntity<Void> updateJobState(@PathVariable("id") UUID id,
+      @PathVariable("jobState") String jobStateStr) throws InvalidRequestException {
+    service.updateJobState(id, getJobState(jobStateStr));
+    log.info("Successfully marked job {} as {}", id, jobStateStr);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
 
+  @PostMapping(value = "/internal/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> completeJob(@RequestBody JobResult jobResult) {
+    service.markJobAsComplete(jobResult);
+    log.info("Successfully marked job {} as complete", jobResult.id());
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   private static User getUser(Authentication authentication) throws ForbiddenException {
@@ -52,6 +62,16 @@ public class DataExporterController {
       log.error("Missing ORCID or email in token");
       throw new ForbiddenException("Missing ORCID or email");
     }
+  }
+
+  private static JobState getJobState(String jobStateStr) throws InvalidRequestException {
+    if (jobStateStr.equals("running")) {
+      return JobState.RUNNING;
+    } else if (jobStateStr.equals("failed")) {
+      return JobState.FAILED;
+    }
+    log.error("Job state {} is not recognized", jobStateStr);
+    throw new InvalidRequestException("Invalid job state :" + jobStateStr);
   }
 
 }
