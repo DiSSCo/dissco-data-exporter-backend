@@ -14,23 +14,59 @@
         "attributes": {
           "type": "object",
           "properties": {
-            "params": {
-              "type": "object",
-              "description": "Search parameters used to define objects to run export job on"
+            "searchParams": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "inputField": {
+                    "type": "string",
+                    "description": "JsonPath (mixed notation) of field used to base annotation reasoning on. Indexes must be wildcards",
+                    "examples": [
+                      "digitalSpecimenWrapper.occurrences[*].location.dwc:country"
+                    ]
+                  },
+                  "inputValue": {
+                    "type": "string",
+                    "description": "Value of the field indicated above",
+                    "examples": [
+                      "United Kingdom"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "targetType": {
+              "enum": [
+                "https://doi.org/21.T11148/894b1e6cad57e921764e",
+                "https://doi.org/21.T11148/bbad8c4e101e8af01115"
+              ]
             },
             "exportType": {
-              "enum": ["doi_list"],
+              "enum": [
+                "doi_list"
+              ],
               "description": "Type of export job. Currently, only one kind of job is supported"
             }
           },
           "additionalProperties": false,
-          "required": ["params", "exportType"]
+          "required": [
+            "params",
+            "targetType",
+            "exportType"
+          ]
         }
       },
-      "required": ["type", "attributes"],
+      "required": [
+        "type",
+        "attributes"
+      ],
       "additionalProperties": false
     }
   },
-  "required": ["data"],
+  "required": [
+    "data"
+  ],
   "additionalProperties": false
 }

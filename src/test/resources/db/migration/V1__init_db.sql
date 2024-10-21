@@ -15,6 +15,7 @@ create table export_queue
     export_type       export_type              not null,
     hashed_params     uuid                     not null,
     destination_email text                     not null,
-    download_link           text
+    download_link     text,
+    target_type       text                     not null
 );
 

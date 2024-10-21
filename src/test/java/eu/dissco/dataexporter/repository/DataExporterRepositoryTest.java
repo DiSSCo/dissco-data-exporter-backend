@@ -9,14 +9,17 @@ import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
 import static eu.dissco.dataexporter.utils.TestUtils.DOWNLOAD_LINK;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
-import static eu.dissco.dataexporter.utils.TestUtils.givenParams;
+import static eu.dissco.dataexporter.utils.TestUtils.givenSearchParams;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
+import eu.dissco.dataexporter.domain.TargetType;
+import java.time.Instant;
+import java.util.UUID;
 import org.jooq.JSONB;
 import org.jooq.Record;
 import org.junit.jupiter.api.AfterEach;
@@ -105,7 +108,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     // Given
     context.insertInto(EXPORT_QUEUE)
         .set(EXPORT_QUEUE.ID, ID)
-        .set(EXPORT_QUEUE.PARAMS, JSONB.valueOf(MAPPER.writeValueAsString(givenParams())))
+        .set(EXPORT_QUEUE.PARAMS, JSONB.valueOf(MAPPER.writeValueAsString(givenSearchParams())))
         .set(EXPORT_QUEUE.CREATOR, ORCID)
         .set(EXPORT_QUEUE.TIME_SCHEDULED, CREATED)
         .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.doi_list)
@@ -113,6 +116,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
         .set(EXPORT_QUEUE.JOB_STATE, JobState.COMPLETED)
         .set(EXPORT_QUEUE.DOWNLOAD_LINK, DOWNLOAD_LINK)
+        .set(EXPORT_QUEUE.TARGET_TYPE, TargetType.DIGITAL_SPECIMEN.getName())
         .execute();
 
     // When
@@ -122,12 +126,75 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     assertThat(result).contains(DOWNLOAD_LINK);
   }
 
+  @Test
+  void getNextJobInQueueEmptyQueue(){
+    // When
+    var result = repository.getNextJobInQueue();
+
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void testGetRunningJobs() throws Exception {
+    // Given
+    repository.addJobToQueue(givenScheduledJob());
+    repository.addJobToQueue(new ExportJob(
+        UUID.randomUUID(),
+        givenSearchParams(),
+        ORCID,
+        JobState.SCHEDULED,
+        Instant.now(),
+        null,
+        null,
+        eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
+        HASHED_PARAMS,
+        EMAIL,
+        TargetType.DIGITAL_SPECIMEN
+    ));
+    repository.updateJobState(ID, JobState.RUNNING);
+
+    // When
+    var result = repository.getRunningJobs();
+
+    // Then
+    assertThat(result).isEqualTo(1);
+  }
+
+  @Test
+  void testGetNextJobInQueue() throws Exception {
+    // Given
+    var expected = givenScheduledJob();
+    repository.addJobToQueue(expected);
+    repository.addJobToQueue(new ExportJob(
+        UUID.randomUUID(),
+        givenSearchParams(),
+        ORCID,
+        JobState.SCHEDULED,
+        Instant.now(),
+        null,
+        null,
+        eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
+        HASHED_PARAMS,
+        EMAIL,
+        TargetType.DIGITAL_SPECIMEN
+    ));
+
+    // When
+    var result = repository.getNextJobInQueue();
+
+    // Then
+    assertThat(result).contains(expected);
+  }
+
 
   private static ExportJob recordToJob(Record dbRecord) {
     try {
       return new ExportJob(
           dbRecord.get(EXPORT_QUEUE.ID),
-          MAPPER.readValue(dbRecord.get(EXPORT_QUEUE.PARAMS).data(), JsonNode.class),
+          MAPPER.readValue(dbRecord.get(EXPORT_QUEUE.PARAMS).data(),
+              new TypeReference<>() {
+              }),
           dbRecord.get(EXPORT_QUEUE.CREATOR),
           dbRecord.get(EXPORT_QUEUE.JOB_STATE),
           dbRecord.get(EXPORT_QUEUE.TIME_SCHEDULED),
@@ -135,10 +202,11 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
           dbRecord.get(EXPORT_QUEUE.TIME_COMPLETED),
           dbRecord.get(EXPORT_QUEUE.EXPORT_TYPE),
           dbRecord.get(EXPORT_QUEUE.HASHED_PARAMS),
-          dbRecord.get(EXPORT_QUEUE.DESTINATION_EMAIL)
+          dbRecord.get(EXPORT_QUEUE.DESTINATION_EMAIL),
+          TargetType.fromString(dbRecord.get(EXPORT_QUEUE.TARGET_TYPE))
       );
     } catch (Exception e){
-      throw new IllegalStateException();
+      throw new IllegalStateException(e);
     }
   }
 
