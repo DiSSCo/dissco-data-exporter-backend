@@ -12,12 +12,14 @@ import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenSearchParams;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
 import eu.dissco.dataexporter.domain.TargetType;
+import eu.dissco.dataexporter.exception.DatabaseRuntimeException;
 import java.time.Instant;
 import java.util.UUID;
 import org.jooq.JSONB;
@@ -185,6 +187,32 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
 
     // Then
     assertThat(result).contains(expected);
+  }
+
+  @Test
+  void testGetNextJobInQueueFails() throws Exception {
+    // Given
+    context.insertInto(EXPORT_QUEUE)
+        .set(EXPORT_QUEUE.ID, ID)
+        .set(EXPORT_QUEUE.PARAMS, JSONB.valueOf(MAPPER.writeValueAsString(givenSearchParams())))
+        .set(EXPORT_QUEUE.JOB_STATE, JobState.SCHEDULED)
+        .set(EXPORT_QUEUE.CREATOR, ORCID)
+        .set(EXPORT_QUEUE.TIME_SCHEDULED, CREATED)
+        .set(EXPORT_QUEUE.HASHED_PARAMS, HASHED_PARAMS)
+        .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
+        .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.doi_list)
+        .set(EXPORT_QUEUE.TARGET_TYPE, "Invalid")
+        .execute();
+
+    // When
+    assertThrows(DatabaseRuntimeException.class, () -> repository.getNextJobInQueue());
+    var result = context.select(EXPORT_QUEUE.JOB_STATE)
+        .from(EXPORT_QUEUE)
+        .where(EXPORT_QUEUE.ID.eq(ID))
+        .fetchOne(EXPORT_QUEUE.JOB_STATE);
+
+    // Then
+    assertThat(result).isEqualTo(JobState.FAILED);
   }
 
 
