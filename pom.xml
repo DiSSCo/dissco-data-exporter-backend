@@ -40,7 +40,6 @@
     <mockito-inline.version>5.2.0</mockito-inline.version>
     <aws-sdk.version>2.28.21</aws-sdk.version>
     <k8s-client-java.version>21.0.1</k8s-client-java.version>
-    <com.google.protpbuf.protobuf-java.version>4.27.5</com.google.protpbuf.protobuf-java.version>
   </properties>
   <dependencyManagement>
     <dependencies>
