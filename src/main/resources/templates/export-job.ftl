@@ -14,9 +14,11 @@ spec:
           image: ${image}
           resources:
             requests:
-              memory: 2G
+              memory: 1G
+              cpu: "500m"
             limits:
-              memory: 2G
+              memory: 1G
+              cpu: "500m"
           env:
             - name: spring.profiles.active
               value: ${jobType}

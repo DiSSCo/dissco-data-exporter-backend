@@ -80,7 +80,7 @@ class JobSchedulerComponentTest {
     var exportJob = givenScheduledJob();
     given(repository.getRunningJobs()).willReturn(0);
     given(jobProperties.getNamespace()).willReturn(NAMESPACE);
-    given(jobProperties.getImageTag()).willReturn("image");
+    given(jobProperties.getImage()).willReturn("image");
     given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
     var properties = givenExpectedTemplateProperties();
 

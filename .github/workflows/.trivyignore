@@ -1,0 +1,4 @@
+# Oct 22
+# Issue in protobuf library from kubernetes client
+# Solution - manually set protobuf version
+# CVE-2024-7254

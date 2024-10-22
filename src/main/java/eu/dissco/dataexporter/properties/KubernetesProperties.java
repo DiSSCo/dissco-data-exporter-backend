@@ -1,8 +1,6 @@
 package eu.dissco.dataexporter.properties;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,16 +23,4 @@ public class KubernetesProperties {
 
   @NotNull
   private Duration apiConnectTimeout = Duration.ofSeconds(15L);
-
-  @NotBlank
-  private String kedaGroup = "keda.sh";
-
-  @NotBlank
-  private String kedaVersion = "v1alpha1";
-
-  @NotBlank
-  private String kedaResource = "scaledobjects";
-
-  @Positive
-  private int kedaPatchWait = 500;
 }

@@ -15,7 +15,7 @@ public class JobProperties {
   Integer queueSize = 3;
 
   @NotBlank
-  String imageTag="";
+  String image = "public.ecr.aws/dissco/dissco-export-job:latest";
 
   @NotBlank
   String namespace = "export-job";

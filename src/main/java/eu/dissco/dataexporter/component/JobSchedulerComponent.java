@@ -6,7 +6,6 @@ import eu.dissco.dataexporter.exception.SchedulingFailedRuntimeException;
 import eu.dissco.dataexporter.properties.JobProperties;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import eu.dissco.dataexporter.schema.SearchParam;
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import io.kubernetes.client.openapi.apis.BatchV1Api;
@@ -46,6 +45,7 @@ public class JobSchedulerComponent {
   private void scheduleJob(ExportJob exportJob) {
     var job = createV1Job(exportJob);
     batchV1Api.createNamespacedJob(jobProperties.getNamespace(), job);
+    log.info("Successfully deployed job {}", job);
   }
 
   private V1Job createV1Job(ExportJob exportJob){
@@ -64,7 +64,7 @@ public class JobSchedulerComponent {
     var map = new HashMap<String, String>();
     map.put("jobName", exportJob.id().toString());
     map.put("namespace", jobProperties.getNamespace());
-    map.put("image", jobProperties.getImageTag());
+    map.put("image", jobProperties.getImage());
     map.put("jobType", exportJob.exportType().getName());
     map.put("inputValues", getParamTermList(exportJob, true));
     map.put("inputFields", getParamTermList(exportJob, false));

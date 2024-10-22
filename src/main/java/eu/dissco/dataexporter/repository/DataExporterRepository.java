@@ -88,12 +88,10 @@ public class DataExporterRepository {
   public Optional<ExportJob> getNextJobInQueue() {
     var result = context.select(EXPORT_QUEUE.asterisk())
         .from(EXPORT_QUEUE)
-        .where(EXPORT_QUEUE.TIME_SCHEDULED.eq(
-            context.select(min(EXPORT_QUEUE.TIME_SCHEDULED))
-                .from(EXPORT_QUEUE)
-                .where(EXPORT_QUEUE.JOB_STATE.eq(JobState.SCHEDULED))
-        ))
-        .fetchAny(this::recordToExportJob);
+        .where(EXPORT_QUEUE.JOB_STATE.eq(JobState.SCHEDULED))
+        .orderBy(EXPORT_QUEUE.TIME_SCHEDULED.asc())
+        .limit(1)
+        .fetchOne(this::recordToExportJob);
     if (result == null) {
       return Optional.empty();
     } else {
