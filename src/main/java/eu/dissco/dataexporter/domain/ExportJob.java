@@ -18,5 +18,6 @@ public record ExportJob(
     ExportType exportType,
     UUID hashedParameters,
     String destinationEmail,
-    TargetType targetType) {
+    TargetType targetType,
+    String downloadLink) {
 }

@@ -35,10 +35,10 @@ public class DataExporterService {
       throws InvalidRequestException {
     var params = jobRequest.getData().getAttributes().getSearchParams();
     var hashedParams = hashParams(params);
-    var existingS3Link = repository.getJobResultsIfExists(hashedParams);
-    if (existingS3Link.isPresent()) {
+    var resultJob = repository.getExportJobFromHashedParamsOptional(hashedParams);
+    if (resultJob.isPresent()) {
       log.info("Job with params {} has already been executed. Notifying user.", params);
-      var result = emailService.sendAwsMail(existingS3Link.get(), user.email());
+      var result = emailService.sendAwsMail(resultJob.get().downloadLink(), resultJob.get());
       if (result.equals(JobState.NOTIFICATION_FAILED)) {
         log.error("Failed to notify user of job. Scheduling separate job");
         addJobToQueue(jobRequest.getData().getAttributes(), hashedParams, user);
@@ -62,8 +62,8 @@ public class DataExporterService {
         ExportType.valueOf(jobAttributes.getExportType().toString()),
         hashedParams,
         user.email(),
-        TargetType.fromString(jobAttributes.getTargetType().toString())
-    );
+        TargetType.fromString(jobAttributes.getTargetType().toString()),
+        null);
     repository.addJobToQueue(job);
   }
 
@@ -72,8 +72,8 @@ public class DataExporterService {
   }
 
   public void markJobAsComplete(JobResult jobResult) {
-    var email = repository.getUserEmailFromJobId(jobResult.id());
-    var jobState = emailService.sendAwsMail(jobResult.downloadLink(), email);
+    var exportJob = repository.getExportJob(jobResult.id());
+    var jobState = emailService.sendAwsMail(jobResult.downloadLink(), exportJob);
     repository.markJobAsComplete(jobResult, jobState);
   }
 

@@ -1,7 +1,6 @@
 package eu.dissco.dataexporter.repository;
 
 import static eu.dissco.dataexporter.database.jooq.Tables.EXPORT_QUEUE;
-import static org.jooq.impl.DSL.min;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,7 +14,6 @@ import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.schema.SearchParam;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -54,13 +52,6 @@ public class DataExporterRepository {
         .fetchOne(0, Integer.class);
   }
 
-  public Optional<String> getJobResultsIfExists(UUID hashedParams) {
-    return context.select(EXPORT_QUEUE.DOWNLOAD_LINK)
-        .from(EXPORT_QUEUE)
-        .where(EXPORT_QUEUE.HASHED_PARAMS.eq(hashedParams))
-        .fetchOptional(EXPORT_QUEUE.DOWNLOAD_LINK);
-  }
-
   public void updateJobState(UUID id, JobState jobState) {
     context.update(EXPORT_QUEUE)
         .set(EXPORT_QUEUE.JOB_STATE, jobState)
@@ -78,11 +69,18 @@ public class DataExporterRepository {
         .execute();
   }
 
-  public String getUserEmailFromJobId(UUID id) {
-    return context.select(EXPORT_QUEUE.DESTINATION_EMAIL)
+  public ExportJob getExportJob(UUID id) {
+    return context.select(EXPORT_QUEUE.asterisk())
         .from(EXPORT_QUEUE)
         .where(EXPORT_QUEUE.ID.eq(id))
-        .fetchOne(EXPORT_QUEUE.DESTINATION_EMAIL);
+        .fetchOne(this::recordToExportJob);
+  }
+
+  public Optional<ExportJob> getExportJobFromHashedParamsOptional(UUID hashedParams) {
+    return context.select(EXPORT_QUEUE.asterisk())
+        .from(EXPORT_QUEUE)
+        .where(EXPORT_QUEUE.HASHED_PARAMS.eq(hashedParams))
+        .fetchOptional(this::recordToExportJob);
   }
 
   public Optional<ExportJob> getNextJobInQueue() {
@@ -124,8 +122,8 @@ public class DataExporterRepository {
           dbRecord.get(EXPORT_QUEUE.EXPORT_TYPE),
           dbRecord.get(EXPORT_QUEUE.HASHED_PARAMS),
           dbRecord.get(EXPORT_QUEUE.DESTINATION_EMAIL),
-          TargetType.fromString(dbRecord.get(EXPORT_QUEUE.TARGET_TYPE))
-      );
+          TargetType.fromString(dbRecord.get(EXPORT_QUEUE.TARGET_TYPE)),
+          dbRecord.get(EXPORT_QUEUE.DOWNLOAD_LINK));
     } catch (IllegalArgumentException | JsonProcessingException e) {
       log.error("Unable to read latest record with id {} from database", jobId, e);
       updateJobState(jobId, JobState.FAILED);

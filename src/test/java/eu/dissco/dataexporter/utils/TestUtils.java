@@ -80,8 +80,24 @@ public class TestUtils {
         eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
         HASHED_PARAMS,
         EMAIL,
-        TargetType.DIGITAL_SPECIMEN
-    );
+        TargetType.DIGITAL_SPECIMEN,
+        null);
+  }
+
+  public static ExportJob givenCompletedJob() {
+    return new ExportJob(
+        ID,
+        givenSearchParams(),
+        ORCID,
+        JobState.COMPLETED,
+        CREATED,
+        CREATED,
+        CREATED,
+        eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
+        HASHED_PARAMS,
+        EMAIL,
+        TargetType.DIGITAL_SPECIMEN,
+        DOWNLOAD_LINK);
   }
 
 

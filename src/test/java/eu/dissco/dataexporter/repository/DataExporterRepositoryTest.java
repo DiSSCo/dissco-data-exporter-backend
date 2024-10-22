@@ -8,6 +8,7 @@ import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
 import static eu.dissco.dataexporter.utils.TestUtils.DOWNLOAD_LINK;
+import static eu.dissco.dataexporter.utils.TestUtils.givenCompletedJob;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenSearchParams;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
@@ -99,20 +100,22 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     repository.addJobToQueue(givenScheduledJob());
 
     // When
-    var result = repository.getUserEmailFromJobId(ID);
+    var result = repository.getExportJob(ID);
 
     // Then
-    assertThat(result).isEqualTo(EMAIL);
+    assertThat(result).isEqualTo(givenScheduledJob());
   }
 
   @Test
-  void testGetJobResultsIfExists() throws Exception {
+  void testGetJobOptional() throws Exception {
     // Given
     context.insertInto(EXPORT_QUEUE)
         .set(EXPORT_QUEUE.ID, ID)
         .set(EXPORT_QUEUE.PARAMS, JSONB.valueOf(MAPPER.writeValueAsString(givenSearchParams())))
         .set(EXPORT_QUEUE.CREATOR, ORCID)
         .set(EXPORT_QUEUE.TIME_SCHEDULED, CREATED)
+        .set(EXPORT_QUEUE.TIME_STARTED, CREATED)
+        .set(EXPORT_QUEUE.TIME_COMPLETED, CREATED)
         .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.doi_list)
         .set(EXPORT_QUEUE.HASHED_PARAMS, HASHED_PARAMS)
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
@@ -122,10 +125,10 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         .execute();
 
     // When
-    var result = repository.getJobResultsIfExists(HASHED_PARAMS);
+    var result = repository.getExportJobFromHashedParamsOptional(HASHED_PARAMS);
 
     // Then
-    assertThat(result).contains(DOWNLOAD_LINK);
+    assertThat(result).contains(givenCompletedJob());
   }
 
   @Test
@@ -152,8 +155,8 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
         HASHED_PARAMS,
         EMAIL,
-        TargetType.DIGITAL_SPECIMEN
-    ));
+        TargetType.DIGITAL_SPECIMEN,
+        null));
     repository.updateJobState(ID, JobState.RUNNING);
 
     // When
@@ -179,8 +182,8 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
         HASHED_PARAMS,
         EMAIL,
-        TargetType.DIGITAL_SPECIMEN
-    ));
+        TargetType.DIGITAL_SPECIMEN,
+        null));
 
     // When
     var result = repository.getNextJobInQueue();
@@ -231,8 +234,8 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
           dbRecord.get(EXPORT_QUEUE.EXPORT_TYPE),
           dbRecord.get(EXPORT_QUEUE.HASHED_PARAMS),
           dbRecord.get(EXPORT_QUEUE.DESTINATION_EMAIL),
-          TargetType.fromString(dbRecord.get(EXPORT_QUEUE.TARGET_TYPE))
-      );
+          TargetType.fromString(dbRecord.get(EXPORT_QUEUE.TARGET_TYPE)),
+          null);
     } catch (Exception e){
       throw new IllegalStateException(e);
     }
