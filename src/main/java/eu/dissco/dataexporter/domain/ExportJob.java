@@ -1,14 +1,15 @@
 package eu.dissco.dataexporter.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
+import eu.dissco.dataexporter.schema.SearchParam;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record ExportJob(
     UUID id,
-    JsonNode params,
+    List<SearchParam> params,
     String creator,
     JobState jobState,
     Instant timeScheduled,
@@ -16,7 +17,7 @@ public record ExportJob(
     Instant timeCompleted,
     ExportType exportType,
     UUID hashedParameters,
-    String destinationEmail
-) {
-
+    String destinationEmail,
+    TargetType targetType,
+    String downloadLink) {
 }

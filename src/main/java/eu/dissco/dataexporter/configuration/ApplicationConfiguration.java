@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers.DateDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class ApplicationConfiguration {
   public static final String DATE_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
   @Bean
+  @Primary
   public ObjectMapper objectMapper() {
     var mapper = new ObjectMapper().findAndRegisterModules();
     var dateModule = new SimpleModule();
@@ -27,6 +30,11 @@ public class ApplicationConfiguration {
     mapper.registerModule(dateModule);
     mapper.setSerializationInclusion(Include.NON_NULL);
     return mapper;
+  }
+
+  @Bean(name = "yamlMapper")
+  public ObjectMapper yamlObjectMapper() {
+    return new ObjectMapper(new YAMLFactory()).findAndRegisterModules();
   }
 
   @Bean

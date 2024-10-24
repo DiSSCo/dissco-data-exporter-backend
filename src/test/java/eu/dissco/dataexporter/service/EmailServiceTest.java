@@ -1,8 +1,10 @@
 package eu.dissco.dataexporter.service;
 
 import static eu.dissco.dataexporter.utils.TestUtils.EMAIL;
+import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.SUBJECT;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
+import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -25,19 +27,42 @@ class EmailServiceTest {
   @Mock
   private SesV2Client emailClient;
 
+  private static final String SUCCESSFUL_EMAIL = """
+      Good day,
+      <p>
+      Your DiSSCo download job is ready at the following link: https://aws.download/s3
+      <p><p>
+      Warm regards,
+      <p>
+      The DiSSCo development team
+      """;
+
+  private static final String NOT_FOUND_EMAIL = """
+      Good day,
+      <p>
+      You requested a DiSSCo data export based on the following criteria:
+      <p>
+      {"$['ods:organisationID']":"https://ror.org/0566bfb96"}
+      These search parameters yielded no results. Consider broadening your search.
+      <p><p>
+      Warm regards,
+      <p>
+      The DiSSCo development team
+      """;
+
   @BeforeEach
   void setup() {
-    emailService = new EmailService(emailClient);
+    emailService = new EmailService(emailClient, MAPPER);
   }
 
   @Test
   void testSendEmail() {
     // Given
     var jobResult = givenJobResult();
-    var expected = givenEmailRequest();
+    var expected = givenEmailRequest(SUCCESSFUL_EMAIL);
 
     // When
-    emailService.sendAwsMail(jobResult.downloadLink(), EMAIL);
+    emailService.sendAwsMail(jobResult.downloadLink(), givenScheduledJob());
 
     // Then
     then(emailClient).should().sendEmail(expected);
@@ -46,16 +71,28 @@ class EmailServiceTest {
   @Test
   void testSendEmailFailed() {
     // Given
-    given(emailClient.sendEmail(givenEmailRequest())).willThrow(SesV2Exception.class);
+    given(emailClient.sendEmail(givenEmailRequest(SUCCESSFUL_EMAIL))).willThrow(SesV2Exception.class);
 
     // When
-    var result = emailService.sendAwsMail(givenJobResult().downloadLink(), EMAIL);
+    var result = emailService.sendAwsMail(givenJobResult().downloadLink(), givenScheduledJob());
 
     // Then
     assertThat(result).isEqualTo(JobState.NOTIFICATION_FAILED);
   }
 
-  private SendEmailRequest givenEmailRequest() {
+  @Test
+  void testSendEmailEmptyResults() {
+    // Given
+    var expected = givenEmailRequest(NOT_FOUND_EMAIL);
+
+    // When
+    emailService.sendAwsMail(null, givenScheduledJob());
+
+    // Then
+    then(emailClient).should().sendEmail(expected);
+  }
+
+  private SendEmailRequest givenEmailRequest(String emailContent) {
     return SendEmailRequest.builder()
         .destination(destination -> destination
             .toAddresses(EMAIL).build())
@@ -64,17 +101,11 @@ class EmailServiceTest {
                 .subject(subject -> subject.data(SUBJECT))
                 .body(body -> body
                     .html(bodyContent -> bodyContent
-                        .data(
-                            """
-                                Good day,
-                                <p>
-                                Your DiSSCo download job is ready at the following link: https://aws.download/s3
-                                <p><p>
-                                Warm regards,
-                                <p>
-                                The DiSSCo development team
-                                """)))))
+                        .data(emailContent)))))
         .fromEmailAddress("no.reply.dissco@gmail.com")
         .build();
   }
+
+
+
 }

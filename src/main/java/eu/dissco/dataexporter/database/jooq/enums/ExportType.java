@@ -17,7 +17,7 @@ import org.jooq.Schema;
 @SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
 public enum ExportType implements EnumType {
 
-    doi_list("doi_list");
+    DOI_LIST("DOI_LIST");
 
     private final String literal;
 

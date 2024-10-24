@@ -1,11 +1,11 @@
 package eu.dissco.dataexporter.service;
 
 import static eu.dissco.dataexporter.utils.TestUtils.CREATED;
-import static eu.dissco.dataexporter.utils.TestUtils.EMAIL;
 import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.DOWNLOAD_LINK;
+import static eu.dissco.dataexporter.utils.TestUtils.givenCompletedJob;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
@@ -68,7 +68,7 @@ class DataExporterServiceTest {
       // Given
       mockedUuid.when(UUID::randomUUID).thenReturn(ID);
       mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
-      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.empty());
+      given(repository.getExportJobFromHashedParamsOptional(HASHED_PARAMS)).willReturn(Optional.empty());
 
       // When
       service.handleJobRequest(givenJobRequest(), givenUser());
@@ -84,8 +84,10 @@ class DataExporterServiceTest {
       // Given
       mockedUuid.when(UUID::randomUUID).thenReturn(ID);
       mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
-      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(DOWNLOAD_LINK));
-      given(emailService.sendAwsMail(DOWNLOAD_LINK, EMAIL)).willReturn(JobState.COMPLETED);
+      given(repository.getExportJobFromHashedParamsOptional(HASHED_PARAMS)).willReturn(
+          Optional.of(givenCompletedJob()));
+      given(emailService.sendAwsMail(DOWNLOAD_LINK, givenCompletedJob())).willReturn(
+          JobState.COMPLETED);
 
       // When
       service.handleJobRequest(givenJobRequest(), givenUser());
@@ -101,8 +103,10 @@ class DataExporterServiceTest {
       // Given
       mockedUuid.when(UUID::randomUUID).thenReturn(ID);
       mockedUuid.when(() -> UUID.fromString(any())).thenReturn(HASHED_PARAMS);
-      given(repository.getJobResultsIfExists(HASHED_PARAMS)).willReturn(Optional.of(DOWNLOAD_LINK));
-      given(emailService.sendAwsMail(DOWNLOAD_LINK, EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
+      given(repository.getExportJobFromHashedParamsOptional(HASHED_PARAMS)).willReturn(
+          Optional.of(givenCompletedJob()));
+      given(emailService.sendAwsMail(DOWNLOAD_LINK, givenCompletedJob())).willReturn(
+          JobState.NOTIFICATION_FAILED);
 
       // When
       service.handleJobRequest(givenJobRequest(), givenUser());
@@ -127,8 +131,8 @@ class DataExporterServiceTest {
   void testMarkJobAsComplete() {
     // Given
     var jobResult = givenJobResult();
-    given(repository.getUserEmailFromJobId(ID)).willReturn(EMAIL);
-    given(emailService.sendAwsMail(jobResult.downloadLink(), EMAIL)).willReturn(JobState.COMPLETED);
+    given(repository.getExportJob(ID)).willReturn(givenScheduledJob());
+    given(emailService.sendAwsMail(jobResult.downloadLink(), givenScheduledJob())).willReturn(JobState.COMPLETED);
 
     // When
     service.markJobAsComplete(jobResult);
@@ -141,8 +145,9 @@ class DataExporterServiceTest {
   void testMarkJobAsCompleteFailedToNotify() {
     // Given
     var jobResult = givenJobResult();
-    given(repository.getUserEmailFromJobId(ID)).willReturn(EMAIL);
-    given(emailService.sendAwsMail(jobResult.downloadLink(), EMAIL)).willReturn(JobState.NOTIFICATION_FAILED);
+    given(repository.getExportJob(ID)).willReturn(givenScheduledJob());
+    given(emailService.sendAwsMail(jobResult.downloadLink(), givenScheduledJob())).willReturn(
+        JobState.NOTIFICATION_FAILED);
 
     // When
     service.markJobAsComplete(jobResult);
