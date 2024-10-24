@@ -1,4 +1,4 @@
-create type export_type as enum ('doi_list');
+create type export_type as enum ('DOI_LIST');
 create type job_state as enum ('SCHEDULED', 'RUNNING', 'FAILED', 'COMPLETED');
 
 create table export_queue

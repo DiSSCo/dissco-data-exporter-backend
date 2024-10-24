@@ -116,7 +116,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         .set(EXPORT_QUEUE.TIME_SCHEDULED, CREATED)
         .set(EXPORT_QUEUE.TIME_STARTED, CREATED)
         .set(EXPORT_QUEUE.TIME_COMPLETED, CREATED)
-        .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.doi_list)
+        .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.DOI_LIST)
         .set(EXPORT_QUEUE.HASHED_PARAMS, HASHED_PARAMS)
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
         .set(EXPORT_QUEUE.JOB_STATE, JobState.COMPLETED)
@@ -152,7 +152,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         Instant.now(),
         null,
         null,
-        eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
+        ExportType.DOI_LIST,
         HASHED_PARAMS,
         EMAIL,
         TargetType.DIGITAL_SPECIMEN,
@@ -179,7 +179,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         Instant.now(),
         null,
         null,
-        eu.dissco.dataexporter.database.jooq.enums.ExportType.doi_list,
+        ExportType.DOI_LIST,
         HASHED_PARAMS,
         EMAIL,
         TargetType.DIGITAL_SPECIMEN,
@@ -203,7 +203,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         .set(EXPORT_QUEUE.TIME_SCHEDULED, CREATED)
         .set(EXPORT_QUEUE.HASHED_PARAMS, HASHED_PARAMS)
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
-        .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.doi_list)
+        .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.DOI_LIST)
         .set(EXPORT_QUEUE.TARGET_TYPE, "Invalid")
         .execute();
 

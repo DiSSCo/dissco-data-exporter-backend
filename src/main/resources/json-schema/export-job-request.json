@@ -48,7 +48,7 @@
             "exportType": {
               "type": "string",
               "enum": [
-                "doi_list"
+                "DOI_LIST"
               ],
               "description": "Type of export job. Currently, only one kind of job is supported"
             }

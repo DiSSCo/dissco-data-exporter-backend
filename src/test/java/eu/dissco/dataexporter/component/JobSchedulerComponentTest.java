@@ -97,7 +97,7 @@ class JobSchedulerComponentTest {
     expectedTemplateProperties.put("jobName", ID.toString());
     expectedTemplateProperties.put("namespace", NAMESPACE);
     expectedTemplateProperties.put("image", "image");
-    expectedTemplateProperties.put("jobType", ExportType.doi_list.getName());
+    expectedTemplateProperties.put("jobType", ExportType.DOI_LIST.getName());
     expectedTemplateProperties.put("inputValues", "https://ror.org/0566bfb96");
     expectedTemplateProperties.put("inputFields", "$['ods:organisationID']");
     expectedTemplateProperties.put("targetType", TargetType.DIGITAL_SPECIMEN.getName());
