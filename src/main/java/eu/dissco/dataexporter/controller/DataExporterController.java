@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/data-export")
+@RequestMapping("/")
 @Slf4j
 @RequiredArgsConstructor
 public class DataExporterController {
 
   private final DataExporterService service;
 
-  @PostMapping("/schedule")
+  @PostMapping("schedule")
   public ResponseEntity<Void> scheduleJob(Authentication authentication,
       @RequestBody DataExportRequest request)
       throws ForbiddenException, InvalidRequestException {
@@ -39,7 +39,7 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 
-  @PostMapping("/internal/{id}/{jobState}")
+  @PostMapping("internal/{id}/{jobState}")
   public ResponseEntity<Void> updateJobState(@PathVariable("id") UUID id,
       @PathVariable("jobState") String jobStateStr) throws InvalidRequestException {
     service.updateJobState(id, getJobState(jobStateStr));
@@ -47,7 +47,7 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
-  @PostMapping(value = "/internal/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "internal/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> completeJob(@RequestBody JobResult jobResult) {
     service.markJobAsComplete(jobResult);
     log.info("Successfully marked job {} as complete", jobResult.id());
