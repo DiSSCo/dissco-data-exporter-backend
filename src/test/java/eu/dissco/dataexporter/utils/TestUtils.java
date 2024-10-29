@@ -13,7 +13,7 @@ import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.schema.Attributes;
 import eu.dissco.dataexporter.schema.Attributes.ExportType;
 import eu.dissco.dataexporter.schema.Data;
-import eu.dissco.dataexporter.schema.ExportJobRequest;
+import eu.dissco.dataexporter.schema.DataExportRequest;
 import eu.dissco.dataexporter.schema.SearchParam;
 import java.time.Instant;
 import java.util.Date;
@@ -53,8 +53,8 @@ public class TestUtils {
         "email", EMAIL);
   }
 
-  public static ExportJobRequest givenJobRequest() {
-    return new ExportJobRequest().withData(new Data()
+  public static DataExportRequest givenJobRequest() {
+    return new DataExportRequest().withData(new Data()
         .withType("export-job")
         .withAttributes(new Attributes()
             .withExportType(ExportType.DOI_LIST)

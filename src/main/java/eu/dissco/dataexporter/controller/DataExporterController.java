@@ -5,7 +5,7 @@ import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.ForbiddenException;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
-import eu.dissco.dataexporter.schema.ExportJobRequest;
+import eu.dissco.dataexporter.schema.DataExportRequest;
 import eu.dissco.dataexporter.service.DataExporterService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class DataExporterController {
 
   @PostMapping("/schedule")
   public ResponseEntity<Void> scheduleJob(Authentication authentication,
-      @RequestBody ExportJobRequest request)
+      @RequestBody DataExportRequest request)
       throws ForbiddenException, InvalidRequestException {
     var user = getUser(authentication);
     service.handleJobRequest(request, user);

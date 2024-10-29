@@ -11,7 +11,7 @@ import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import eu.dissco.dataexporter.schema.Attributes;
-import eu.dissco.dataexporter.schema.ExportJobRequest;
+import eu.dissco.dataexporter.schema.DataExportRequest;
 import eu.dissco.dataexporter.schema.SearchParam;
 import java.security.MessageDigest;
 import java.time.Instant;
@@ -31,7 +31,7 @@ public class DataExporterService {
   private final ObjectMapper mapper;
   private final MessageDigest messageDigest;
 
-  public void handleJobRequest(ExportJobRequest jobRequest, User user)
+  public void handleJobRequest(DataExportRequest jobRequest, User user)
       throws InvalidRequestException {
     var params = jobRequest.getData().getAttributes().getSearchParams();
     var hashedParams = hashParams(params);
