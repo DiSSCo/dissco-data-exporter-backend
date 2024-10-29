@@ -55,7 +55,7 @@
           },
           "additionalProperties": false,
           "required": [
-            "params",
+            "searchParams",
             "targetType",
             "exportType"
           ]

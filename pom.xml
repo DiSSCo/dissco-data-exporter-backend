@@ -280,6 +280,17 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <mainClass>eu.dissco.dataexporter.maven.MavenRunner</mainClass>
+          <arguments>
+            <argument>https://schemas.dissco.tech/schemas/developer-schema/data-export/0.3.0/data-export-request.json</argument>
+          </arguments>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
