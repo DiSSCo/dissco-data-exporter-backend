@@ -42,12 +42,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: aws-secrets
-                  key: data-export-secret-access-key
+                  key: export-s3-access-key
             - name: s3.access-key-secret
               valueFrom:
                 secretKeyRef:
                   name: aws-secrets
-                  key: data-export-access-key-secret
+                  key: export-s3-access-key-secret
             - name: token.secret
               valueFrom:
                 secretKeyRef:
