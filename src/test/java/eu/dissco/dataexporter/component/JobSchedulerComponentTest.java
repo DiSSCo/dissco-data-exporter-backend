@@ -96,6 +96,7 @@ class JobSchedulerComponentTest {
     var expectedTemplateProperties = new HashMap<String, String>();
     expectedTemplateProperties.put("jobName", ID.toString());
     expectedTemplateProperties.put("namespace", NAMESPACE);
+    expectedTemplateProperties.put("jobId", ID.toString());
     expectedTemplateProperties.put("image", "image");
     expectedTemplateProperties.put("jobType", ExportType.DOI_LIST.getName());
     expectedTemplateProperties.put("inputValues", "https://ror.org/0566bfb96");

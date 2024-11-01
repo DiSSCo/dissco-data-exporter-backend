@@ -41,8 +41,8 @@ spec:
             - name: s3.access-key
               valueFrom:
                 secretKeyRef:
-                name: aws-secrets
-                key: data-export-secret-access-key
+                  name: aws-secrets
+                  key: data-export-secret-access-key
             - name: s3.access-key-secret
               valueFrom:
                 secretKeyRef:

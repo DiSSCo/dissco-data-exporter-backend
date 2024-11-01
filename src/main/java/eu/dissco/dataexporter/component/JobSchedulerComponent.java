@@ -40,12 +40,14 @@ public class JobSchedulerComponent {
       var nextJob = repository.getNextJobInQueue();
       nextJob.ifPresent(this::scheduleJob);
     }
+    log.debug("No jobs in queue");
   }
 
   private void scheduleJob(ExportJob exportJob) {
+    log.info("Scheduling job {}", exportJob.id());
     var job = createV1Job(exportJob);
     batchV1Api.createNamespacedJob(jobProperties.getNamespace(), job);
-    log.info("Successfully deployed job {}", job);
+    log.info("Successfully deployed job {}", exportJob.id());
   }
 
   private V1Job createV1Job(ExportJob exportJob){
@@ -64,6 +66,7 @@ public class JobSchedulerComponent {
     var map = new HashMap<String, String>();
     map.put("jobName", exportJob.id().toString());
     map.put("namespace", jobProperties.getNamespace());
+    map.put("jobId", exportJob.id().toString());
     map.put("image", jobProperties.getImage());
     map.put("jobType", exportJob.exportType().getName());
     map.put("inputValues", getParamTermList(exportJob, true));
