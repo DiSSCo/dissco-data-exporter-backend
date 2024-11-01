@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.then;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.TargetType;
 import eu.dissco.dataexporter.properties.JobProperties;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
@@ -72,6 +73,7 @@ class JobSchedulerComponentTest {
 
     // Then
     then(batchV1Api).shouldHaveNoInteractions();
+    then(repository).shouldHaveNoMoreInteractions();
   }
 
   @Test
@@ -90,6 +92,7 @@ class JobSchedulerComponentTest {
     // Then
     then(jobTemplate).should().process(eq(properties), any());
     then(batchV1Api).should().createNamespacedJob(eq(NAMESPACE), any());
+    then(repository).should().updateJobState(ID, JobState.QUEUED);
   }
 
   private static Map<String, String> givenExpectedTemplateProperties() {
