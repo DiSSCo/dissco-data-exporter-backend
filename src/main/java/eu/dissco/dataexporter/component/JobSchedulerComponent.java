@@ -1,6 +1,7 @@
 package eu.dissco.dataexporter.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
 import eu.dissco.dataexporter.exception.SchedulingFailedRuntimeException;
 import eu.dissco.dataexporter.properties.JobProperties;
@@ -47,6 +48,7 @@ public class JobSchedulerComponent {
     log.info("Scheduling job {}", exportJob.id());
     var job = createV1Job(exportJob);
     batchV1Api.createNamespacedJob(jobProperties.getNamespace(), job);
+    repository.updateJobState(exportJob.id(), JobState.QUEUED);
     log.info("Successfully deployed job {}", exportJob.id());
   }
 
