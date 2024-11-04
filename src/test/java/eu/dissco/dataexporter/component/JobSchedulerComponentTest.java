@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
@@ -14,7 +16,9 @@ import eu.dissco.dataexporter.domain.TargetType;
 import eu.dissco.dataexporter.properties.JobProperties;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import freemarker.template.Template;
+import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.BatchV1Api;
+import io.kubernetes.client.openapi.apis.BatchV1Api.APIcreateNamespacedJobRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -80,10 +84,12 @@ class JobSchedulerComponentTest {
   void testScheduleJob() throws Exception {
     // Given
     var exportJob = givenScheduledJob();
+    var jobRequestMock = mock(APIcreateNamespacedJobRequest.class);
     given(repository.getRunningJobs()).willReturn(0);
     given(jobProperties.getNamespace()).willReturn(NAMESPACE);
     given(jobProperties.getImage()).willReturn("image");
     given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
+    given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);
     var properties = givenExpectedTemplateProperties();
 
     // When
@@ -93,6 +99,24 @@ class JobSchedulerComponentTest {
     then(jobTemplate).should().process(eq(properties), any());
     then(batchV1Api).should().createNamespacedJob(eq(NAMESPACE), any());
     then(repository).should().updateJobState(ID, JobState.QUEUED);
+  }
+
+  @Test
+  void testScheduleJobFailed() throws Exception {
+    // Given
+    var jobRequestMock = mock(APIcreateNamespacedJobRequest.class);
+    var exportJob = givenScheduledJob();
+    given(repository.getRunningJobs()).willReturn(0);
+    given(jobProperties.getNamespace()).willReturn(NAMESPACE);
+    given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
+    given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);
+    doThrow(ApiException.class).when(jobRequestMock).execute();
+
+    // When
+    jobScheduler.schedule();
+
+    // Then
+    then(repository).should().updateJobState(ID, JobState.FAILED);
   }
 
   private static Map<String, String> givenExpectedTemplateProperties() {
