@@ -80,9 +80,14 @@ public class JobSchedulerComponent {
   private static String getParamTermList(ExportJob exportJob, boolean streamValues){
     List<String> termList;
     if (streamValues){
-      termList = exportJob.params().stream().map(SearchParam::getInputValue).toList();
+      termList = exportJob.params().stream()
+          .map(SearchParam::getInputValue)
+          .toList();
     } else {
-      termList = exportJob.params().stream().map(SearchParam::getInputField).toList();
+      termList = exportJob.params().stream()
+          .map(SearchParam::getInputField)
+          .map(s -> s.replace("'", ""))
+          .toList();
     }
     return String.join(",", termList);
   }
