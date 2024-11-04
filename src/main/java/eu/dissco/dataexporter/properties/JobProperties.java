@@ -18,6 +18,6 @@ public class JobProperties {
   String image = "public.ecr.aws/dissco/dissco-export-job:latest";
 
   @NotBlank
-  String namespace = "export-job";
+  String namespace = "data-export-job";
 
 }
