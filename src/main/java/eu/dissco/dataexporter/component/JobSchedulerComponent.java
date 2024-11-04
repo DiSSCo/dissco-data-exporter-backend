@@ -44,7 +44,7 @@ public class JobSchedulerComponent {
         try {
           scheduleJob(nextJob.get());
         } catch (ApiException e){
-          log.error("Failed to execute job {}", nextJob.get().id());
+          log.error("Failed to execute job {}", nextJob.get().id(), e);
           repository.updateJobState(nextJob.get().id(), JobState.FAILED);
         }
       }
