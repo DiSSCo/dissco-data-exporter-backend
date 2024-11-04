@@ -9,6 +9,7 @@ import eu.dissco.dataexporter.repository.DataExporterRepository;
 import eu.dissco.dataexporter.schema.SearchParam;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.BatchV1Api;
 import io.kubernetes.client.openapi.models.V1Job;
 import java.io.IOException;
@@ -39,15 +40,22 @@ public class JobSchedulerComponent {
     var runningJobs = repository.getRunningJobs();
     if (runningJobs < jobProperties.getQueueSize()){
       var nextJob = repository.getNextJobInQueue();
-      nextJob.ifPresent(this::scheduleJob);
+      if (nextJob.isPresent()){
+        try {
+          scheduleJob(nextJob.get());
+        } catch (ApiException e){
+          log.error("Failed to execute job {}", nextJob.get().id());
+          repository.updateJobState(nextJob.get().id(), JobState.FAILED);
+        }
+      }
     }
     log.debug("No jobs in queue");
   }
 
-  private void scheduleJob(ExportJob exportJob) {
+  private void scheduleJob(ExportJob exportJob) throws ApiException {
     log.info("Scheduling job {}", exportJob.id());
     var job = createV1Job(exportJob);
-    batchV1Api.createNamespacedJob(jobProperties.getNamespace(), job);
+    batchV1Api.createNamespacedJob(jobProperties.getNamespace(), job).execute();
     repository.updateJobState(exportJob.id(), JobState.QUEUED);
     log.info("Successfully deployed job {}", exportJob.id());
   }
