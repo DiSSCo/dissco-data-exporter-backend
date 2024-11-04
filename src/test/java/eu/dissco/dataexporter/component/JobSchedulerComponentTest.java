@@ -84,10 +84,12 @@ class JobSchedulerComponentTest {
   void testScheduleJob() throws Exception {
     // Given
     var exportJob = givenScheduledJob();
+    var jobRequestMock = mock(APIcreateNamespacedJobRequest.class);
     given(repository.getRunningJobs()).willReturn(0);
     given(jobProperties.getNamespace()).willReturn(NAMESPACE);
     given(jobProperties.getImage()).willReturn("image");
     given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
+    given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);
     var properties = givenExpectedTemplateProperties();
 
     // When
