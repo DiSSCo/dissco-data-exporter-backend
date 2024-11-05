@@ -42,6 +42,10 @@ spec:
               value: demo-api-client
             - name: s3.bucket-name
               value: ${bucketName}
+            - name: logging.level.web
+              value: debug
+            - name: logging.level.root
+              value: debug
             - name: s3.access-key
               valueFrom:
                 secretKeyRef:
