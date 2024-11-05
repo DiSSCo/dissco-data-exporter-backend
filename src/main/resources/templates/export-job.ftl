@@ -38,12 +38,14 @@ spec:
               value: client_credentials
             - name: token.id
               value: demo-api-client
+            - name: s3.bucket-name
+              value: ${bucketName}
             - name: s3.access-key
               valueFrom:
                 secretKeyRef:
                   name: aws-secrets
                   key: export-s3-access-key
-            - name: s3.access-key-secret
+            - name: s3.access-secret
               valueFrom:
                 secretKeyRef:
                   name: aws-secrets

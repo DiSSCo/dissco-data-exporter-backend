@@ -20,4 +20,7 @@ public class JobProperties {
   @NotBlank
   String namespace = "data-export-job";
 
+  @NotBlank
+  String bucketName = "dissco-data-export-test";
+
 }

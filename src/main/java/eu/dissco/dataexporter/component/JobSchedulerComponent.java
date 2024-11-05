@@ -78,7 +78,8 @@ public class JobSchedulerComponent {
     map.put("namespace", jobProperties.getNamespace());
     map.put("jobId", exportJob.id().toString());
     map.put("image", jobProperties.getImage());
-    map.put("jobType", exportJob.exportType().getName());
+    map.put("bucketName", jobProperties.getBucketName());
+    map.put("jobType", exportJob.exportType().toString().toLowerCase());
     map.put("inputValues", getParamTermList(exportJob, true));
     map.put("inputFields", getParamTermList(exportJob, false));
     map.put("targetType", exportJob.targetType().getName());
