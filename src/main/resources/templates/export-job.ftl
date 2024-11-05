@@ -8,7 +8,7 @@ spec:
   template:
     spec:
       restartPolicy: Never
-      serviceAccountName:  data-export-secret-manager
+      serviceAccountName:  data-export-job-service-account
       containers:
         - name: dissco-export-job
           image: ${image}
