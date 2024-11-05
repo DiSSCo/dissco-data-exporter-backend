@@ -30,7 +30,7 @@ spec:
               value: ${jobId}
             - name: job.target-type
               value: ${targetType}
-            - name: index.temp-file-name
+            - name: index.temp-file-location
               value: /temp/tmp.csv.gz
             - name: endpoint.backend
               value: https://dev.dissco.tech/api/v1/data-export/internal
