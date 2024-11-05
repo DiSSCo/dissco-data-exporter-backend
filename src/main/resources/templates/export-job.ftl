@@ -73,9 +73,6 @@ spec:
           volumeMounts:
             - mountPath: /temp
               name: temp-volume
-            - name: db-secrets
-              mountPath: "/mnt/secrets-store/db-secrets"
-              readOnly: true
       volumes:
         - name: temp-volume
           emptyDir: { }
