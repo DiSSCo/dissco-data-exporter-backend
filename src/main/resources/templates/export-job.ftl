@@ -30,8 +30,10 @@ spec:
               value: ${jobId}
             - name: job.target-type
               value: ${targetType}
+            - name: index.temp-file-name
+              value: /temp/tmp.csv.gz
             - name: endpoint.backend
-              value: https://dev.dissco.tech/api/v1/export/internal
+              value: https://dev.dissco.tech/api/v1/data-export/internal
             - name: endpoint.token
               value: https://login-demo.dissco.eu/auth/realms/dissco/protocol/openid-connect/token
             - name: token.grant-type
