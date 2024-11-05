@@ -73,12 +73,12 @@ spec:
           volumeMounts:
             - mountPath: /temp
               name: temp-volume
+            - name: aws-secrets
+              mountPath: "/mnt/secrets-store/aws-secrets"
+              readOnly: true
       volumes:
         - name: temp-volume
           emptyDir: { }
-        - name: db-secrets
-          mountPath: "/mnt/secrets-store/aws-secrets"
-          readOnly: true
         - name: aws-secrets
           csi:
             driver: secrets-store.csi.k8s.io
