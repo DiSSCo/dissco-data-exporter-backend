@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.TargetType;
 import eu.dissco.dataexporter.properties.JobProperties;
@@ -88,6 +87,7 @@ class JobSchedulerComponentTest {
     given(repository.getRunningJobs()).willReturn(0);
     given(jobProperties.getNamespace()).willReturn(NAMESPACE);
     given(jobProperties.getImage()).willReturn("image");
+    given(jobProperties.getBucketName()).willReturn("bucket");
     given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
     given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);
     var properties = givenExpectedTemplateProperties();
@@ -125,7 +125,8 @@ class JobSchedulerComponentTest {
     expectedTemplateProperties.put("namespace", NAMESPACE);
     expectedTemplateProperties.put("jobId", ID.toString());
     expectedTemplateProperties.put("image", "image");
-    expectedTemplateProperties.put("jobType", ExportType.DOI_LIST.getName());
+    expectedTemplateProperties.put("jobType", "doi_list");
+    expectedTemplateProperties.put("bucketName", "bucket");
     expectedTemplateProperties.put("inputValues", "https://ror.org/0566bfb96");
     expectedTemplateProperties.put("inputFields", "$[ods:organisationID]");
     expectedTemplateProperties.put("targetType", TargetType.DIGITAL_SPECIMEN.getName());
