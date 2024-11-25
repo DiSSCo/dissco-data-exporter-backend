@@ -20,7 +20,7 @@ public class EmailService {
   private final ObjectMapper mapper;
 
   private static final String SUBJECT = "Your DiSSCo Data Download is Ready!";
-  private static final String SENDER = "no.reply.dissco@gmail.com";
+  private static final String SENDER = "noreply@dissco.eu";
   private static final String SUCCESSFUL_TEMPLATE =
       """
       Good day,
