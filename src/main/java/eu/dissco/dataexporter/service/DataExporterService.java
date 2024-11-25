@@ -65,6 +65,7 @@ public class DataExporterService {
         TargetType.fromString(jobAttributes.getTargetType().toString()),
         null);
     repository.addJobToQueue(job);
+    log.info("Successfully added job {} to queue", job.id());
   }
 
   public void updateJobState(UUID id, JobState jobState) {

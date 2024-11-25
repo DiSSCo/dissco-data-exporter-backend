@@ -102,7 +102,7 @@ class EmailServiceTest {
                 .body(body -> body
                     .html(bodyContent -> bodyContent
                         .data(emailContent)))))
-        .fromEmailAddress("no.reply.dissco@gmail.com")
+        .fromEmailAddress(EMAIL)
         .build();
   }
 
