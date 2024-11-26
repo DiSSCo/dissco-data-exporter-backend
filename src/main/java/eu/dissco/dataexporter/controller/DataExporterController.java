@@ -7,6 +7,10 @@ import eu.dissco.dataexporter.exception.ForbiddenException;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.schema.DataExportRequest;
 import eu.dissco.dataexporter.service.DataExporterService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,20 +20,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@Controller
-@RequestMapping("/")
 @Slf4j
+@RestController
+@RequestMapping("/")
 @RequiredArgsConstructor
+@RestControllerAdvice
 public class DataExporterController {
 
   private final DataExporterService service;
 
-  @PostMapping("schedule")
+
+  @Operation(summary = "Schedule a download job")
+  @PostMapping(value = "schedule", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> scheduleJob(Authentication authentication,
       @RequestBody DataExportRequest request)
       throws ForbiddenException, InvalidRequestException {
@@ -39,6 +49,7 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 
+  @Operation(summary = "Update a job state to running/failed. Used by data export job", hidden = true)
   @PostMapping("internal/{id}/{jobState}")
   public ResponseEntity<Void> updateJobState(@PathVariable("id") UUID id,
       @PathVariable("jobState") String jobStateStr) throws InvalidRequestException {
@@ -47,6 +58,7 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
+  @Operation(summary = "Update a job state to completed. Used by data export job", hidden = true)
   @PostMapping(value = "internal/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> completeJob(@RequestBody JobResult jobResult) {
     service.markJobAsComplete(jobResult);
