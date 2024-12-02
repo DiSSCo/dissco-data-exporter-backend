@@ -31,15 +31,16 @@
     <url/>
   </scm>
   <properties>
+    <aws-sdk.version>2.28.21</aws-sdk.version>
     <java.version>21</java.version>
+    <k8s-client-java.version>21.0.1</k8s-client-java.version>
+    <mockito-inline.version>5.2.0</mockito-inline.version>
     <sonar.organization>dissco</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.coverage.jacoco.xmlReportPaths>../app-it/target/site/jacoco-aggregate/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
+    <springdoc.version>2.7.0</springdoc.version>
     <testcontainers.version>1.19.8</testcontainers.version>
-    <mockito-inline.version>5.2.0</mockito-inline.version>
-    <aws-sdk.version>2.28.21</aws-sdk.version>
-    <k8s-client-java.version>21.0.1</k8s-client-java.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -101,6 +102,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${springdoc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
