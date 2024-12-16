@@ -33,13 +33,13 @@ spec:
             - name: index.temp-file-location
               value: /temp/tmp.csv.gz
             - name: endpoint.backend
-              value: https://dev.dissco.tech/api/v1/data-export/internal
+              value: https://api.dissco.eu/data-export/v1/internal
             - name: endpoint.token
               value: https://login-demo.dissco.eu/auth/realms/dissco/protocol/openid-connect/token
             - name: token.grant-type
               value: client_credentials
             - name: token.id
-              value: demo-api-client
+              value: production-dissco-data-export-job
             - name: s3.bucket-name
               value: ${bucketName}
             - name: s3.access-key
@@ -56,7 +56,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: aws-secrets
-                  key: handle-endpoint-token
+                  key: production-dissco-data-export-job-token
             - name: elasticsearch.hostname
               value: elastic-search-es-http.elastic.svc.cluster.local
             - name: elasticsearch.port
