@@ -35,17 +35,7 @@ public class DataExporterService {
       throws InvalidRequestException {
     var params = jobRequest.getData().getAttributes().getSearchParams();
     var hashedParams = hashParams(params);
-    var resultJob = repository.getExportJobFromHashedParamsOptional(hashedParams);
-    if (resultJob.isPresent()) {
-      log.info("Job with params {} has already been executed. Notifying user.", params);
-      var result = emailService.sendAwsMail(resultJob.get().downloadLink(), resultJob.get());
-      if (result.equals(JobState.NOTIFICATION_FAILED)) {
-        log.error("Failed to notify user of job. Scheduling separate job");
-        addJobToQueue(jobRequest.getData().getAttributes(), hashedParams, user);
-      }
-    } else {
-      addJobToQueue(jobRequest.getData().getAttributes(), hashedParams, user);
-    }
+    addJobToQueue(jobRequest.getData().getAttributes(), hashedParams, user);
   }
 
   private void addJobToQueue(Attributes jobAttributes, UUID hashedParams, User user)
