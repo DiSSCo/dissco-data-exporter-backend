@@ -7,8 +7,6 @@ import static eu.dissco.dataexporter.utils.TestUtils.HASHED_PARAMS;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
 import static eu.dissco.dataexporter.utils.TestUtils.MAPPER;
 import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
-import static eu.dissco.dataexporter.utils.TestUtils.DOWNLOAD_LINK;
-import static eu.dissco.dataexporter.utils.TestUtils.givenCompletedJob;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenSearchParams;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
@@ -104,31 +102,6 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
 
     // Then
     assertThat(result).isEqualTo(givenScheduledJob());
-  }
-
-  @Test
-  void testGetJobOptional() throws Exception {
-    // Given
-    context.insertInto(EXPORT_QUEUE)
-        .set(EXPORT_QUEUE.ID, ID)
-        .set(EXPORT_QUEUE.PARAMS, JSONB.valueOf(MAPPER.writeValueAsString(givenSearchParams())))
-        .set(EXPORT_QUEUE.CREATOR, ORCID)
-        .set(EXPORT_QUEUE.TIME_SCHEDULED, CREATED)
-        .set(EXPORT_QUEUE.TIME_STARTED, CREATED)
-        .set(EXPORT_QUEUE.TIME_COMPLETED, CREATED)
-        .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.DOI_LIST)
-        .set(EXPORT_QUEUE.HASHED_PARAMS, HASHED_PARAMS)
-        .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
-        .set(EXPORT_QUEUE.JOB_STATE, JobState.COMPLETED)
-        .set(EXPORT_QUEUE.DOWNLOAD_LINK, DOWNLOAD_LINK)
-        .set(EXPORT_QUEUE.TARGET_TYPE, TargetType.DIGITAL_SPECIMEN.getName())
-        .execute();
-
-    // When
-    var result = repository.getExportJobFromHashedParamsOptional(HASHED_PARAMS);
-
-    // Then
-    assertThat(result).contains(givenCompletedJob());
   }
 
   @Test

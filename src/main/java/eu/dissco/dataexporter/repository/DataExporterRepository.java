@@ -76,13 +76,6 @@ public class DataExporterRepository {
         .fetchOne(this::recordToExportJob);
   }
 
-  public Optional<ExportJob> getExportJobFromHashedParamsOptional(UUID hashedParams) {
-    return context.select(EXPORT_QUEUE.asterisk())
-        .from(EXPORT_QUEUE)
-        .where(EXPORT_QUEUE.HASHED_PARAMS.eq(hashedParams))
-        .fetchOptional(this::recordToExportJob);
-  }
-
   public Optional<ExportJob> getNextJobInQueue() {
     var result = context.select(EXPORT_QUEUE.asterisk())
         .from(EXPORT_QUEUE)
