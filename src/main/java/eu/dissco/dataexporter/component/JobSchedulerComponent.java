@@ -5,6 +5,7 @@ import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.ExportJob;
 import eu.dissco.dataexporter.exception.SchedulingFailedRuntimeException;
 import eu.dissco.dataexporter.properties.JobProperties;
+import eu.dissco.dataexporter.properties.TokenProperties;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import eu.dissco.dataexporter.schema.SearchParam;
 import freemarker.template.Template;
@@ -34,6 +35,7 @@ public class JobSchedulerComponent {
   private final BatchV1Api batchV1Api;
   @Qualifier("yamlMapper")
   private final ObjectMapper yamlMapper;
+  private final TokenProperties tokenProperties;
 
   @Scheduled(fixedRate = 3600)
   public void schedule(){
@@ -83,6 +85,8 @@ public class JobSchedulerComponent {
     map.put("inputValues", getParamTermList(exportJob, true));
     map.put("inputFields", getParamTermList(exportJob, false));
     map.put("targetType", exportJob.targetType().getName());
+    map.put("tokenIdName", tokenProperties.getIdName());
+    map.put("tokenSecretName", tokenProperties.getSecretName());
     return map;
   }
 
