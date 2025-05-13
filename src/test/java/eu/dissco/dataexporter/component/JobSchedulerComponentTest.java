@@ -91,6 +91,7 @@ class JobSchedulerComponentTest {
     given(jobProperties.getNamespace()).willReturn(NAMESPACE);
     given(jobProperties.getImage()).willReturn("image");
     given(jobProperties.getBucketName()).willReturn("bucket");
+    given(jobProperties.getEndpoint()).willReturn("endpoint");
     given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
     given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);
     given(tokenProperties.getIdName()).willReturn("tokenIdName");
@@ -135,6 +136,7 @@ class JobSchedulerComponentTest {
     expectedTemplateProperties.put("inputValues", "https://ror.org/0566bfb96");
     expectedTemplateProperties.put("inputFields", "$[ods:organisationID]");
     expectedTemplateProperties.put("targetType", TargetType.DIGITAL_SPECIMEN.getName());
+    expectedTemplateProperties.put("endpointBackend", "endpoint");
     expectedTemplateProperties.put("tokenIdName", "tokenIdName");
     expectedTemplateProperties.put("tokenSecretName", "tokenSecretName");
     return expectedTemplateProperties;
