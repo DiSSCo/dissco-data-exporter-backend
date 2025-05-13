@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
 import eu.dissco.dataexporter.domain.TargetType;
 import eu.dissco.dataexporter.properties.JobProperties;
+import eu.dissco.dataexporter.properties.TokenProperties;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import freemarker.template.Template;
 import io.kubernetes.client.openapi.ApiException;
@@ -40,6 +41,8 @@ class JobSchedulerComponentTest {
   private JobProperties jobProperties;
   @Mock
   private ObjectMapper mockYamlMapper;
+  @Mock
+  private TokenProperties tokenProperties;
   private JobSchedulerComponent jobScheduler;
 
   private static final Integer JOB_QUEUE_SIZE = 3;
@@ -48,7 +51,7 @@ class JobSchedulerComponentTest {
   @BeforeEach
   void setup() {
     jobScheduler = new JobSchedulerComponent(repository, jobProperties, jobTemplate,
-        batchV1Api, mockYamlMapper);
+        batchV1Api, mockYamlMapper, tokenProperties);
     given(jobProperties.getQueueSize()).willReturn(JOB_QUEUE_SIZE);
   }
 
@@ -90,6 +93,8 @@ class JobSchedulerComponentTest {
     given(jobProperties.getBucketName()).willReturn("bucket");
     given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
     given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);
+    given(tokenProperties.getIdName()).willReturn("tokenIdName");
+    given(tokenProperties.getSecretName()).willReturn("tokenSecretName");
     var properties = givenExpectedTemplateProperties();
 
     // When
@@ -130,6 +135,8 @@ class JobSchedulerComponentTest {
     expectedTemplateProperties.put("inputValues", "https://ror.org/0566bfb96");
     expectedTemplateProperties.put("inputFields", "$[ods:organisationID]");
     expectedTemplateProperties.put("targetType", TargetType.DIGITAL_SPECIMEN.getName());
+    expectedTemplateProperties.put("tokenIdName", "tokenIdName");
+    expectedTemplateProperties.put("tokenSecretName", "tokenSecretName");
     return expectedTemplateProperties;
   }
 

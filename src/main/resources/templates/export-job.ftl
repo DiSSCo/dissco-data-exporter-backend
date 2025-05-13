@@ -39,7 +39,7 @@ spec:
             - name: token.grant-type
               value: client_credentials
             - name: token.id
-              value: production-dissco-data-export-job
+              value: ${tokenIdName}
             - name: s3.bucket-name
               value: ${bucketName}
             - name: s3.access-key
@@ -56,7 +56,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: aws-secrets
-                  key: production-dissco-data-export-job-token
+                  key: ${tokenSecretName}
             - name: elasticsearch.hostname
               value: elastic-search-es-http.elastic.svc.cluster.local
             - name: elasticsearch.port
