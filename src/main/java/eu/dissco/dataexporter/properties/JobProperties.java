@@ -24,6 +24,6 @@ public class JobProperties {
   String bucketName = "dissco-data-export-test";
 
   @NotBlank
-  String endpointToken;
+  String endpoint;
 
 }
