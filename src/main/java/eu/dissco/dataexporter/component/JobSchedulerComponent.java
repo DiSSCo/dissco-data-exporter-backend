@@ -85,6 +85,7 @@ public class JobSchedulerComponent {
     map.put("inputValues", getParamTermList(exportJob, true));
     map.put("inputFields", getParamTermList(exportJob, false));
     map.put("targetType", exportJob.targetType().getName());
+    map.put("backendEndpoint", jobProperties.getEndpointToken());
     map.put("tokenIdName", tokenProperties.getIdName());
     map.put("tokenSecretName", tokenProperties.getSecretName());
     return map;

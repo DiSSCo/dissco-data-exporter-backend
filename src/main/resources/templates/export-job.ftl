@@ -33,7 +33,7 @@ spec:
             - name: index.temp-file-location
               value: /temp/tmp.csv.gz
             - name: endpoint.backend
-              value: https://api.dissco.eu/data-export/v1/internal
+              value: ${backendEndpoint}
             - name: endpoint.token
               value: https://login-demo.dissco.eu/auth/realms/dissco/protocol/openid-connect/token
             - name: token.grant-type
