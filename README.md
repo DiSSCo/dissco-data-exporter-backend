@@ -1,2 +1,2 @@
 # dissco-data-exporter
-Manages the packaging and exporting of DiSSCO data to clients
+Manages the packaging and exporting of DiSSCo data to clients

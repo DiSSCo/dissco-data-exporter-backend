@@ -5,7 +5,9 @@ package eu.dissco.dataexporter.database.jooq;
 
 
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
+import eu.dissco.dataexporter.database.jooq.tables.SourceSystem;
 import eu.dissco.dataexporter.database.jooq.tables.records.ExportQueueRecord;
+import eu.dissco.dataexporter.database.jooq.tables.records.SourceSystemRecord;
 
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -25,4 +27,5 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<ExportQueueRecord> EXPORT_QUEUE_PK = Internal.createUniqueKey(ExportQueue.EXPORT_QUEUE, DSL.name("export_queue_pk"), new TableField[] { ExportQueue.EXPORT_QUEUE.ID }, true);
+    public static final UniqueKey<SourceSystemRecord> SOURCE_SYSTEM_PKEY = Internal.createUniqueKey(SourceSystem.SOURCE_SYSTEM, DSL.name("source_system_pkey"), new TableField[] { SourceSystem.SOURCE_SYSTEM.ID }, true);
 }

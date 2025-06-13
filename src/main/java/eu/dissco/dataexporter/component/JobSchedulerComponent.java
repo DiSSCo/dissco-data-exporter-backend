@@ -13,6 +13,7 @@ import freemarker.template.TemplateException;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.BatchV1Api;
 import io.kubernetes.client.openapi.models.V1Job;
+import jakarta.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -36,16 +38,34 @@ public class JobSchedulerComponent {
   @Qualifier("yamlMapper")
   private final ObjectMapper yamlMapper;
   private final TokenProperties tokenProperties;
+  @NotBlank
+  @Value("${spring.datasource.url}")
+  private String databaseUrl;
 
-  @Scheduled(fixedRate = 3600)
-  public void schedule(){
+  private static String getParamTermList(ExportJob exportJob, boolean streamValues) {
+    List<String> termList;
+    if (streamValues) {
+      termList = exportJob.params().stream()
+          .map(SearchParam::getInputValue)
+          .toList();
+    } else {
+      termList = exportJob.params().stream()
+          .map(SearchParam::getInputField)
+          .map(s -> s.replace("'", ""))
+          .toList();
+    }
+    return String.join(",", termList);
+  }
+
+  @Scheduled(fixedRate = 10000)
+  public void schedule() {
     var runningJobs = repository.getRunningJobs();
-    if (runningJobs < jobProperties.getQueueSize()){
+    if (runningJobs < jobProperties.getQueueSize()) {
       var nextJob = repository.getNextJobInQueue();
-      if (nextJob.isPresent()){
+      if (nextJob.isPresent()) {
         try {
           scheduleJob(nextJob.get());
-        } catch (ApiException e){
+        } catch (ApiException e) {
           log.error("Failed to execute job {}", nextJob.get().id(), e);
           repository.updateJobState(nextJob.get().id(), JobState.FAILED);
         }
@@ -62,23 +82,24 @@ public class JobSchedulerComponent {
     log.info("Successfully deployed job {}", exportJob.id());
   }
 
-  private V1Job createV1Job(ExportJob exportJob){
+  private V1Job createV1Job(ExportJob exportJob) {
     try {
       var properties = getDeploymentTemplateProperties(exportJob);
       var writer = new StringWriter();
       jobTemplate.process(properties, writer);
       return yamlMapper.readValue(writer.toString(), V1Job.class);
-    } catch (TemplateException | IOException e){
+    } catch (TemplateException | IOException e) {
       log.error("Error in scheduling job", e);
       throw new SchedulingFailedRuntimeException();
     }
   }
 
-  private Map<String, String> getDeploymentTemplateProperties(ExportJob exportJob){
+  private Map<String, String> getDeploymentTemplateProperties(ExportJob exportJob) {
     var map = new HashMap<String, String>();
     map.put("jobName", exportJob.id().toString());
     map.put("namespace", jobProperties.getNamespace());
     map.put("jobId", exportJob.id().toString());
+    map.put("isSourceSystemJob", String.valueOf(exportJob.isSourceSystemJob()));
     map.put("image", jobProperties.getImage());
     map.put("bucketName", jobProperties.getBucketName());
     map.put("jobType", exportJob.exportType().toString().toLowerCase());
@@ -88,21 +109,7 @@ public class JobSchedulerComponent {
     map.put("endpointBackend", jobProperties.getEndpoint());
     map.put("tokenIdName", tokenProperties.getIdName());
     map.put("tokenSecretName", tokenProperties.getSecretName());
+    map.put("databaseUrl", databaseUrl);
     return map;
-  }
-
-  private static String getParamTermList(ExportJob exportJob, boolean streamValues){
-    List<String> termList;
-    if (streamValues){
-      termList = exportJob.params().stream()
-          .map(SearchParam::getInputValue)
-          .toList();
-    } else {
-      termList = exportJob.params().stream()
-          .map(SearchParam::getInputField)
-          .map(s -> s.replace("'", ""))
-          .toList();
-    }
-    return String.join(",", termList);
   }
 }

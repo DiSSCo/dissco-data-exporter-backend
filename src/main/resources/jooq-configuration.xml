@@ -14,7 +14,7 @@
       <name>org.jooq.meta.postgres.PostgresDatabase</name>
       <inputSchema>public</inputSchema>
       <includes>
-        export_queue | export_type | job_state
+        export_queue | export_type | job_state | source_system | translator_type
       </includes>
       <forcedTypes>
         <forcedType>

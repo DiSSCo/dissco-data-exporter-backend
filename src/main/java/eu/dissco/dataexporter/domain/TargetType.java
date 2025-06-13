@@ -22,10 +22,10 @@ public enum TargetType {
     this.name = name;
   }
 
-  public static TargetType fromString(String s){
-    if ("https://doi.org/21.T11148/894b1e6cad57e921764e".equals(s)){
+  public static TargetType fromString(String s) {
+    if ("https://doi.org/21.T11148/894b1e6cad57e921764e".equals(s)) {
       return DIGITAL_SPECIMEN;
-    } else if ("https://doi.org/21.T11148/bbad8c4e101e8af01115".equals(s)){
+    } else if ("https://doi.org/21.T11148/bbad8c4e101e8af01115".equals(s)) {
       return DIGITAL_MEDIA;
     }
     log.error("Invalid target type {}", s);
