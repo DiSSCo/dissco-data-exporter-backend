@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class TemplateConfiguration {
+
   private final freemarker.template.Configuration configuration;
 
   @Bean

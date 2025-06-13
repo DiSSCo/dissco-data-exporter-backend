@@ -30,6 +30,8 @@ spec:
               value: ${jobId}
             - name: job.target-type
               value: ${targetType}
+            - name: job.is-source-system-job
+              value: ${isSourceSystemJob}
             - name: index.temp-file-location
               value: /temp/tmp.csv.gz
             - name: endpoint.backend
@@ -71,6 +73,18 @@ spec:
                 secretKeyRef:
                   name: aws-secrets
                   key: elastic-password
+            - name: spring.datasource.url
+              value: ${databaseUrl}
+            - name: spring.datasource.username
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: db-username
+            - name: spring.datasource.password
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: db-password
           securityContext:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
@@ -79,6 +93,9 @@ spec:
               name: temp-volume
             - name: aws-secrets
               mountPath: "/mnt/secrets-store/aws-secrets"
+              readOnly: true
+            - name: db-secrets
+              mountPath: "/mnt/secrets-store/db-secrets"
               readOnly: true
       volumes:
         - name: temp-volume
@@ -89,3 +106,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "aws-secrets"
+        - name: db-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "db-secrets"

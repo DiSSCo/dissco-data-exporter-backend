@@ -192,6 +192,20 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
         return (String) get(11);
     }
 
+    /**
+     * Setter for <code>public.export_queue.is_source_system_job</code>.
+     */
+    public void setIsSourceSystemJob(Boolean value) {
+        set(12, value);
+    }
+
+    /**
+     * Getter for <code>public.export_queue.is_source_system_job</code>.
+     */
+    public Boolean getIsSourceSystemJob() {
+        return (Boolean) get(12);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -215,7 +229,7 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
     /**
      * Create a detached, initialised ExportQueueRecord
      */
-    public ExportQueueRecord(UUID id, JSONB params, String creator, JobState jobState, Instant timeScheduled, Instant timeStarted, Instant timeCompleted, ExportType exportType, UUID hashedParams, String destinationEmail, String downloadLink, String targetType) {
+    public ExportQueueRecord(UUID id, JSONB params, String creator, JobState jobState, Instant timeScheduled, Instant timeStarted, Instant timeCompleted, ExportType exportType, UUID hashedParams, String destinationEmail, String downloadLink, String targetType, Boolean isSourceSystemJob) {
         super(ExportQueue.EXPORT_QUEUE);
 
         setId(id);
@@ -230,6 +244,7 @@ public class ExportQueueRecord extends UpdatableRecordImpl<ExportQueueRecord> {
         setDestinationEmail(destinationEmail);
         setDownloadLink(downloadLink);
         setTargetType(targetType);
+        setIsSourceSystemJob(isSourceSystemJob);
         resetChangedOnNotNull();
     }
 }

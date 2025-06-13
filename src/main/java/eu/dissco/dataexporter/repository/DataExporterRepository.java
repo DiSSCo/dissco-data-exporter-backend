@@ -41,6 +41,7 @@ public class DataExporterRepository {
         .set(EXPORT_QUEUE.EXPORT_TYPE, job.exportType())
         .set(EXPORT_QUEUE.HASHED_PARAMS, job.hashedParameters())
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, job.destinationEmail())
+        .set(EXPORT_QUEUE.IS_SOURCE_SYSTEM_JOB, job.isSourceSystemJob())
         .set(EXPORT_QUEUE.TARGET_TYPE, job.targetType().getName())
         .execute();
   }
@@ -116,6 +117,7 @@ public class DataExporterRepository {
           dbRecord.get(EXPORT_QUEUE.HASHED_PARAMS),
           dbRecord.get(EXPORT_QUEUE.DESTINATION_EMAIL),
           TargetType.fromString(dbRecord.get(EXPORT_QUEUE.TARGET_TYPE)),
+          dbRecord.get(EXPORT_QUEUE.IS_SOURCE_SYSTEM_JOB),
           dbRecord.get(EXPORT_QUEUE.DOWNLOAD_LINK));
     } catch (IllegalArgumentException | JsonProcessingException e) {
       log.error("Unable to read latest record with id {} from database", jobId, e);

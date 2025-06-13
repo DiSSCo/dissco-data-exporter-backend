@@ -5,6 +5,7 @@ package eu.dissco.dataexporter.database.jooq;
 
 
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
+import eu.dissco.dataexporter.database.jooq.tables.SourceSystem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +34,11 @@ public class Public extends SchemaImpl {
     public final ExportQueue EXPORT_QUEUE = ExportQueue.EXPORT_QUEUE;
 
     /**
+     * The table <code>public.source_system</code>.
+     */
+    public final SourceSystem SOURCE_SYSTEM = SourceSystem.SOURCE_SYSTEM;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -48,7 +54,8 @@ public class Public extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
-            ExportQueue.EXPORT_QUEUE
+            ExportQueue.EXPORT_QUEUE,
+            SourceSystem.SOURCE_SYSTEM
         );
     }
 }

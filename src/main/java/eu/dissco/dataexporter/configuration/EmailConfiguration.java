@@ -12,16 +12,17 @@ import software.amazon.awssdk.services.sesv2.SesV2Client;
 @Configuration
 @RequiredArgsConstructor
 public class EmailConfiguration {
+
   private final AwsProperties awsProperties;
 
   @Bean
-  public SesV2Client s3Client(){
+  public SesV2Client s3Client() {
     var region = Region.EU_WEST_2;
     return SesV2Client.builder()
         .region(region)
         .credentialsProvider(StaticCredentialsProvider.create(
             AwsBasicCredentials.create(awsProperties.getAccessKey(),
-               awsProperties.getSecretAccessKey())))
+                awsProperties.getSecretAccessKey())))
         .build();
   }
 

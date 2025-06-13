@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties("k8s")
 public class KubernetesProperties {
+
   @NotNull
   private Duration apiPingInterval = Duration.ofSeconds(15L);
 

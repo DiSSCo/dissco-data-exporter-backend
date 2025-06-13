@@ -5,6 +5,7 @@ package eu.dissco.dataexporter.database.jooq;
 
 
 import eu.dissco.dataexporter.database.jooq.tables.ExportQueue;
+import eu.dissco.dataexporter.database.jooq.tables.SourceSystem;
 
 
 /**
@@ -17,4 +18,9 @@ public class Tables {
      * The table <code>public.export_queue</code>.
      */
     public static final ExportQueue EXPORT_QUEUE = ExportQueue.EXPORT_QUEUE;
+
+    /**
+     * The table <code>public.source_system</code>.
+     */
+    public static final SourceSystem SOURCE_SYSTEM = SourceSystem.SOURCE_SYSTEM;
 }
