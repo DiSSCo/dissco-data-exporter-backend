@@ -38,7 +38,6 @@ public class JobSchedulerComponent {
   @Qualifier("yamlMapper")
   private final ObjectMapper yamlMapper;
   private final TokenProperties tokenProperties;
-  @NotBlank
   @Value("${spring.datasource.url}")
   private String databaseUrl;
 
