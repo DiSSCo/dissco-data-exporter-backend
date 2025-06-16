@@ -33,6 +33,21 @@ public class DataExporterService {
   private final MessageDigest messageDigest;
   private final SourceSystemRepository sourceSystemRepository;
 
+  private static String determineSourceSystemId(ExportJob exportJob)
+      throws InvalidRequestException {
+    var sourceSystemList = exportJob.params().stream().
+        filter(param -> param.getInputField().contains("ods:sourceSystemID"))
+        .map(SearchParam::getInputValue)
+        .toList();
+    if (sourceSystemList.size() != 1) {
+      log.error("Source system ID not found or multiple IDs found for job {} with params: {}",
+          exportJob.id(), exportJob.params());
+      throw new InvalidRequestException("Source system ID not found or multiple IDs found");
+    } else {
+      return sourceSystemList.getFirst();
+    }
+  }
+
   public void handleJobRequest(DataExportRequest jobRequest, User user)
       throws InvalidRequestException {
     var params = jobRequest.getData().getAttributes().getSearchParams();
@@ -46,7 +61,7 @@ public class DataExporterService {
     if (isSourceSystemJob && exportType.equals(ExportType.DOI_LIST)) {
       throw new InvalidRequestException("Invalid export type for source system job: " + exportType);
     } else if (isSourceSystemJob) {
-      var sourceSystemId = deterimeSourceSystemId(job);
+      var sourceSystemId = determineSourceSystemId(job);
       log.info("This is a source system job with source system ID: {}", sourceSystemId);
     }
   }
@@ -91,7 +106,7 @@ public class DataExporterService {
   private JobState handleSourceSystemJob(JobResult jobResult, ExportJob exportJob) {
     JobState jobState;
     try {
-      var sourceSystemId = deterimeSourceSystemId(exportJob);
+      var sourceSystemId = determineSourceSystemId(exportJob);
       jobState = sourceSystemRepository.addDownloadLinkToJob(exportJob.exportType(), sourceSystemId,
           jobResult.downloadLink());
     } catch (InvalidRequestException e) {
@@ -100,20 +115,6 @@ public class DataExporterService {
       jobState = JobState.FAILED;
     }
     return jobState;
-  }
-
-  private String deterimeSourceSystemId(ExportJob exportJob) throws InvalidRequestException {
-    var sourceSystemList = exportJob.params().stream().
-        filter(param -> param.getInputField().contains("ods:sourceSystemID"))
-        .map(SearchParam::getInputValue)
-        .toList();
-    if (sourceSystemList.size() != 1) {
-      log.error("Source system ID not found or multiple IDs found for job {} with params: {}",
-          exportJob.id(), exportJob.params());
-      throw new InvalidRequestException("Source system ID not found or multiple IDs found");
-    } else {
-      return sourceSystemList.getFirst();
-    }
   }
 
   private UUID hashParams(List<SearchParam> params) throws InvalidRequestException {
