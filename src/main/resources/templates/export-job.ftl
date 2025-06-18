@@ -26,7 +26,7 @@ spec:
               value: ${inputFields}
             - name: job.input-values
               value: ${inputValues}
-            - name: job.id
+            - name: job.job-id
               value: ${jobId}
             - name: job.target-type
               value: ${targetType}
