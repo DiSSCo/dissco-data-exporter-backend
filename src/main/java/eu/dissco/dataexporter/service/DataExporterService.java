@@ -10,6 +10,7 @@ import eu.dissco.dataexporter.domain.TargetType;
 import eu.dissco.dataexporter.domain.User;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
+import eu.dissco.dataexporter.repository.SourceSystemRepository;
 import eu.dissco.dataexporter.schema.Attributes;
 import eu.dissco.dataexporter.schema.DataExportRequest;
 import eu.dissco.dataexporter.schema.SearchParam;
@@ -30,12 +31,39 @@ public class DataExporterService {
   private final EmailService emailService;
   private final ObjectMapper mapper;
   private final MessageDigest messageDigest;
+  private final SourceSystemRepository sourceSystemRepository;
+
+  private static String determineSourceSystemId(ExportJob exportJob)
+      throws InvalidRequestException {
+    var sourceSystemList = exportJob.params().stream().
+        filter(param -> param.getInputField().contains("ods:sourceSystemID"))
+        .map(SearchParam::getInputValue)
+        .toList();
+    if (sourceSystemList.size() != 1) {
+      log.error("Source system ID not found or multiple IDs found for job {} with params: {}",
+          exportJob.id(), exportJob.params());
+      throw new InvalidRequestException("Source system ID not found or multiple IDs found");
+    } else {
+      return sourceSystemList.getFirst();
+    }
+  }
 
   public void handleJobRequest(DataExportRequest jobRequest, User user)
       throws InvalidRequestException {
     var params = jobRequest.getData().getAttributes().getSearchParams();
     var hashedParams = hashParams(params);
     addJobToQueue(jobRequest.getData().getAttributes(), hashedParams, user);
+  }
+
+  private void checkIfJobIsValid(ExportJob job) throws InvalidRequestException {
+    var isSourceSystemJob = job.isSourceSystemJob();
+    var exportType = job.exportType();
+    if (isSourceSystemJob && exportType.equals(ExportType.DOI_LIST)) {
+      throw new InvalidRequestException("Invalid export type for source system job: " + exportType);
+    } else if (isSourceSystemJob) {
+      var sourceSystemId = determineSourceSystemId(job);
+      log.info("This is a source system job with source system ID: {}", sourceSystemId);
+    }
   }
 
   private void addJobToQueue(Attributes jobAttributes, UUID hashedParams, User user)
@@ -53,7 +81,9 @@ public class DataExporterService {
         hashedParams,
         user.email(),
         TargetType.fromString(jobAttributes.getTargetType().toString()),
+        jobAttributes.getIsSourceSystemJob(),
         null);
+    checkIfJobIsValid(job);
     repository.addJobToQueue(job);
     log.info("Successfully added job {} to queue", job.id());
   }
@@ -64,8 +94,27 @@ public class DataExporterService {
 
   public void markJobAsComplete(JobResult jobResult) {
     var exportJob = repository.getExportJob(jobResult.id());
-    var jobState = emailService.sendAwsMail(jobResult.downloadLink(), exportJob);
+    JobState jobState;
+    if (exportJob.isSourceSystemJob()) {
+      jobState = handleSourceSystemJob(jobResult, exportJob);
+    } else {
+      jobState = emailService.sendAwsMail(jobResult.downloadLink(), exportJob);
+    }
     repository.markJobAsComplete(jobResult, jobState);
+  }
+
+  private JobState handleSourceSystemJob(JobResult jobResult, ExportJob exportJob) {
+    JobState jobState;
+    try {
+      var sourceSystemId = determineSourceSystemId(exportJob);
+      jobState = sourceSystemRepository.addDownloadLinkToJob(exportJob.exportType(), sourceSystemId,
+          jobResult.downloadLink());
+    } catch (InvalidRequestException e) {
+      log.error("SourceSystem Job: {} contains invalid params: {}", exportJob.id(),
+          exportJob.params(), e);
+      jobState = JobState.FAILED;
+    }
+    return jobState;
   }
 
   private UUID hashParams(List<SearchParam> params) throws InvalidRequestException {

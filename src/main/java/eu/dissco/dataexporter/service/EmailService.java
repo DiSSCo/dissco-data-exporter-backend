@@ -16,35 +16,33 @@ import software.amazon.awssdk.services.sesv2.model.SesV2Exception;
 @Slf4j
 public class EmailService {
 
-  private final SesV2Client emailClient;
-  private final ObjectMapper mapper;
-
   private static final String SUBJECT = "Your DiSSCo Data Download is Ready!";
   private static final String SENDER = "noreply@dissco.eu";
   private static final String SUCCESSFUL_TEMPLATE =
       """
-      Good day,
-      <p>
-      Your DiSSCo download job is ready at the following link: %s
-      <p><p>
-      Warm regards,
-      <p>
-      The DiSSCo development team
-      """;
-
+          Good day,
+          <p>
+          Your DiSSCo download job is ready at the following link: %s
+          <p><p>
+          Warm regards,
+          <p>
+          The DiSSCo development team
+          """;
   private static final String NOT_FOUND_TEMPLATE =
       """
-      Good day,
-      <p>
-      You requested a DiSSCo data export based on the following criteria:
-      <p>
-      %s
-      These search parameters yielded no results. Consider broadening your search.
-      <p><p>
-      Warm regards,
-      <p>
-      The DiSSCo development team
-      """;
+          Good day,
+          <p>
+          You requested a DiSSCo data export based on the following criteria:
+          <p>
+          %s
+          These search parameters yielded no results. Consider broadening your search.
+          <p><p>
+          Warm regards,
+          <p>
+          The DiSSCo development team
+          """;
+  private final SesV2Client emailClient;
+  private final ObjectMapper mapper;
 
   public JobState sendAwsMail(String s3Link, ExportJob exportJob) {
     var emailRequest = SendEmailRequest.builder()
@@ -68,12 +66,12 @@ public class EmailService {
     }
   }
 
-  private String getEmailContent(String s3Link, ExportJob exportJob){
-    if (s3Link == null){
+  private String getEmailContent(String s3Link, ExportJob exportJob) {
+    if (s3Link == null) {
       String paramString;
       try {
         var searchParametersJson = mapper.createObjectNode();
-        for (var param : exportJob.params()){
+        for (var param : exportJob.params()) {
           searchParametersJson.put(param.getInputField(), param.getInputValue());
         }
         paramString = mapper.writeValueAsString(searchParametersJson);

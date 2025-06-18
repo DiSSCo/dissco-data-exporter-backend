@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.5</version>
+    <version>3.5.0</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>eu.dissco</groupId>
@@ -31,16 +31,16 @@
     <url/>
   </scm>
   <properties>
-    <aws-sdk.version>2.28.21</aws-sdk.version>
+    <aws-sdk.version>2.31.62</aws-sdk.version>
     <java.version>21</java.version>
-    <k8s-client-java.version>21.0.1</k8s-client-java.version>
+    <k8s-client-java.version>24.0.0</k8s-client-java.version>
     <mockito-inline.version>5.2.0</mockito-inline.version>
     <sonar.organization>dissco</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.coverage.jacoco.xmlReportPaths>../app-it/target/site/jacoco-aggregate/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
     <springdoc.version>2.7.0</springdoc.version>
-    <testcontainers.version>1.19.8</testcontainers.version>
+    <testcontainers.version>1.21.1</testcontainers.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -77,7 +77,6 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -182,11 +181,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>kafka</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
     </dependency>
@@ -199,6 +193,7 @@
   </dependencies>
 
   <build>
+    <defaultGoal>-B verify</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

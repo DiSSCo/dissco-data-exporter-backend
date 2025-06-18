@@ -129,6 +129,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         HASHED_PARAMS,
         EMAIL,
         TargetType.DIGITAL_SPECIMEN,
+        Boolean.FALSE,
         null));
     repository.updateJobState(ID, JobState.RUNNING);
 
@@ -156,6 +157,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         HASHED_PARAMS,
         EMAIL,
         TargetType.DIGITAL_SPECIMEN,
+        Boolean.FALSE,
         null));
 
     // When
@@ -178,6 +180,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
         .set(EXPORT_QUEUE.DESTINATION_EMAIL, EMAIL)
         .set(EXPORT_QUEUE.EXPORT_TYPE, ExportType.DOI_LIST)
         .set(EXPORT_QUEUE.TARGET_TYPE, "Invalid")
+        .set(EXPORT_QUEUE.IS_SOURCE_SYSTEM_JOB, Boolean.FALSE)
         .execute();
 
     // When
@@ -208,6 +211,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
           dbRecord.get(EXPORT_QUEUE.HASHED_PARAMS),
           dbRecord.get(EXPORT_QUEUE.DESTINATION_EMAIL),
           TargetType.fromString(dbRecord.get(EXPORT_QUEUE.TARGET_TYPE)),
+          Boolean.FALSE,
           null);
     } catch (Exception e){
       throw new IllegalStateException(e);

@@ -139,6 +139,8 @@ class JobSchedulerComponentTest {
     expectedTemplateProperties.put("endpointBackend", "endpoint");
     expectedTemplateProperties.put("tokenIdName", "tokenIdName");
     expectedTemplateProperties.put("tokenSecretName", "tokenSecretName");
+    expectedTemplateProperties.put("isSourceSystemJob", "false");
+    expectedTemplateProperties.put("databaseUrl", null);
     return expectedTemplateProperties;
   }
 
