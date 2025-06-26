@@ -81,7 +81,7 @@ public class DataExporterService {
         hashedParams,
         user.email(),
         TargetType.fromString(jobAttributes.getTargetType().toString()),
-        jobAttributes.getIsSourceSystemJob(),
+        Boolean.TRUE.equals(jobAttributes.getIsSourceSystemJob()),
         null);
     checkIfJobIsValid(job);
     repository.addJobToQueue(job);
