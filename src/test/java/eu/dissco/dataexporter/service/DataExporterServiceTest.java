@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mockStatic;
 
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
 import eu.dissco.dataexporter.database.jooq.enums.JobState;
+import eu.dissco.dataexporter.domain.JobResult;
 import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.repository.DataExporterRepository;
 import eu.dissco.dataexporter.repository.SourceSystemRepository;
@@ -179,6 +180,22 @@ class DataExporterServiceTest {
 
     // Then
     then(repository).should().markJobAsComplete(jobResult, JobState.COMPLETED);
+    then(emailService).shouldHaveNoInteractions();
+  }
+
+  @Test
+  void testCompleteSourceSystemNoRecords() {
+    // Given
+    var jobResult = new JobResult(ID, null);
+    given(repository.getExportJob(ID)).willReturn(
+        givenScheduledJob(true, givenSourceSystemSearchParams(), ExportType.DWC_DP));
+
+    // When
+    service.markJobAsComplete(jobResult);
+
+    // Then
+    then(repository).should().markJobAsComplete(jobResult, JobState.FAILED);
+    then(sourceSystemRepository).shouldHaveNoInteractions();
     then(emailService).shouldHaveNoInteractions();
   }
 

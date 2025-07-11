@@ -107,8 +107,15 @@ public class DataExporterService {
     JobState jobState;
     try {
       var sourceSystemId = determineSourceSystemId(exportJob);
-      jobState = sourceSystemRepository.addDownloadLinkToJob(exportJob.exportType(), sourceSystemId,
-          jobResult.downloadLink());
+      if (jobResult.downloadLink() == null) {
+        log.error("SourceSystem Job: {} for SourceSystem: {} has not produced any result",
+            exportJob.id(), sourceSystemId);
+        jobState = JobState.FAILED;
+      } else {
+        jobState = sourceSystemRepository.addDownloadLinkToJob(exportJob.exportType(),
+            sourceSystemId,
+            jobResult.downloadLink());
+      }
     } catch (InvalidRequestException e) {
       log.error("SourceSystem Job: {} contains invalid params: {}", exportJob.id(),
           exportJob.params(), e);
