@@ -37,7 +37,7 @@ spec:
             - name: endpoint.backend
               value: ${endpointBackend}
             - name: endpoint.token
-              value: https://login-demo.dissco.eu/auth/realms/dissco/protocol/openid-connect/token
+              value: https://keycloak.iam.naturalis.io/realms/dissco-dev/protocol/openid-connect/token
             - name: token.grant-type
               value: client_credentials
             - name: token.id
