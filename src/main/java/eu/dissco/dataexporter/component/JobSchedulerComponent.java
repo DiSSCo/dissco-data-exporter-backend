@@ -108,6 +108,7 @@ public class JobSchedulerComponent {
     map.put("endpointBackend", jobProperties.getEndpoint());
     map.put("tokenIdName", tokenProperties.getIdName());
     map.put("tokenSecretName", tokenProperties.getSecretName());
+    map.put("tokenEndpoint", tokenProperties.getTokenEndpoint());
     map.put("databaseUrl", databaseUrl);
     return map;
   }

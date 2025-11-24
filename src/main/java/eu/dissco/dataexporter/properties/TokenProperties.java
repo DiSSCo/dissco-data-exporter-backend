@@ -14,5 +14,7 @@ public class TokenProperties {
   private String secretName;
   @NotBlank
   private String idName;
+  @NotBlank
+  private String tokenEndpoint;
 
 }
