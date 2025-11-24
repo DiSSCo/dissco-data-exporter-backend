@@ -96,6 +96,7 @@ class JobSchedulerComponentTest {
     given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);
     given(tokenProperties.getIdName()).willReturn("tokenIdName");
     given(tokenProperties.getSecretName()).willReturn("tokenSecretName");
+    given(tokenProperties.getTokenEndpoint()).willReturn("https://tokenEndpoint");
     var properties = givenExpectedTemplateProperties();
 
     // When
@@ -137,6 +138,7 @@ class JobSchedulerComponentTest {
     expectedTemplateProperties.put("inputFields", "$[ods:organisationID]");
     expectedTemplateProperties.put("targetType", TargetType.DIGITAL_SPECIMEN.getName());
     expectedTemplateProperties.put("endpointBackend", "endpoint");
+    expectedTemplateProperties.put("tokenEndpoint", "https://tokenEndpoint");
     expectedTemplateProperties.put("tokenIdName", "tokenIdName");
     expectedTemplateProperties.put("tokenSecretName", "tokenSecretName");
     expectedTemplateProperties.put("isSourceSystemJob", "false");
