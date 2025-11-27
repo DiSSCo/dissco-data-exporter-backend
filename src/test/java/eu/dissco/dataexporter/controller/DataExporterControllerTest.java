@@ -1,8 +1,8 @@
 package eu.dissco.dataexporter.controller;
 
+import static eu.dissco.dataexporter.utils.TestUtils.BARE_ORCID;
 import static eu.dissco.dataexporter.utils.TestUtils.EMAIL;
 import static eu.dissco.dataexporter.utils.TestUtils.ID;
-import static eu.dissco.dataexporter.utils.TestUtils.ORCID;
 import static eu.dissco.dataexporter.utils.TestUtils.givenClaims;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobRequest;
 import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
@@ -101,7 +101,7 @@ class DataExporterControllerTest {
   void testScheduleJobNoEmail() {
     // Given
     givenAuthentication(Map.of(
-        "orcid", ORCID
+        "orcid", BARE_ORCID
     ));
 
     // When / Then
