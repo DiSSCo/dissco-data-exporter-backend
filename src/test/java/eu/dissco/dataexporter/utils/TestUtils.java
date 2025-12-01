@@ -27,6 +27,7 @@ public class TestUtils {
   public static final UUID ID = UUID.fromString("cd5c9ee7-23b1-4615-993e-9d56d0720213");
   public static final Instant CREATED = Instant.parse("2022-11-01T09:59:24.00Z");
   public static final String ORCID = "https://orcid.org/0000-0001-7573-4330";
+  public static final String BARE_ORCID = "0000-0001-7573-4330";
   public static final String EMAIL = "noreply@dissco.eu";
   public static final UUID HASHED_PARAMS = UUID.fromString("cdecac99-021f-54a6-7656-cfbdc59059b4");
   public static final String DOWNLOAD_LINK = "https://aws.download/s3";
@@ -49,7 +50,7 @@ public class TestUtils {
 
   public static Map<String, Object> givenClaims() {
     return Map.of(
-        "orcid", ORCID,
+        "orcid", BARE_ORCID,
         "email", EMAIL);
   }
 

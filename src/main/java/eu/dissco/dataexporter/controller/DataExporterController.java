@@ -8,6 +8,7 @@ import eu.dissco.dataexporter.exception.InvalidRequestException;
 import eu.dissco.dataexporter.schema.DataExportRequest;
 import eu.dissco.dataexporter.service.DataExporterService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +31,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class DataExporterController {
 
+  private static final String ORCID = "orcid";
+
   private final DataExporterService service;
 
   private static User getUser(Authentication authentication) throws ForbiddenException {
     var claims = ((Jwt) authentication.getPrincipal()).getClaims();
-    if (claims.containsKey("orcid") && claims.containsKey("email")) {
-      return new User((String) claims.get("orcid"), (String) claims.get("email"));
+    if (claims.containsKey(ORCID) && claims.containsKey("email")) {
+      return new User(retrieveOrcid(claims), (String) claims.get("email"));
     } else {
       log.error("Missing ORCID or email in token");
       throw new ForbiddenException("Missing ORCID or email");
@@ -78,6 +81,15 @@ public class DataExporterController {
     service.markJobAsComplete(jobResult);
     log.info("Successfully marked job {} as complete", jobResult.id());
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
+  private static String retrieveOrcid(Map<String, Object> claims) {
+    var orcid = (String) claims.get(ORCID);
+    if (!orcid.startsWith("https://orcid.org/")) {
+      return "https://orcid.org/" + orcid;
+    } else {
+      return orcid;
+    }
   }
 
 }
