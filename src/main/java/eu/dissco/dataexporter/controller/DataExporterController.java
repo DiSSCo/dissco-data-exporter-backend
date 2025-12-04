@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,6 +67,7 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 
+  @PreAuthorize("hasRole('dissco-data-exporter-backend')")
   @Operation(summary = "Update a job state to running/failed. Used by data export job", hidden = true)
   @PostMapping("internal/{id}/{jobState}")
   public ResponseEntity<Void> updateJobState(@PathVariable("id") UUID id,
@@ -75,6 +77,7 @@ public class DataExporterController {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
+  @PreAuthorize("hasRole('dissco-data-exporter-backend')")
   @Operation(summary = "Update a job state to completed. Used by data export job", hidden = true)
   @PostMapping(value = "internal/completed", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> completeJob(@RequestBody JobResult jobResult) {

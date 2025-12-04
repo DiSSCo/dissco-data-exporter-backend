@@ -7,12 +7,10 @@ import org.springframework.validation.annotation.Validated;
 
 @Data
 @Validated
-@ConfigurationProperties("aws")
-public class AwsProperties {
+@ConfigurationProperties("security")
+public class SecurityProperties {
 
   @NotBlank
-  private String accessKey;
-
-  private String secretAccessKey;
+  private String clientId = "dissco-data-exporter-backend";
 
 }
