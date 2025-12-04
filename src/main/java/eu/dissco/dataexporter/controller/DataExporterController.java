@@ -56,7 +56,6 @@ public class DataExporterController {
     throw new InvalidRequestException("Invalid job state :" + jobStateStr);
   }
 
-  @PreAuthorize("hasRole('dissco-data-exporter-backend')")
   @Operation(summary = "Schedule a download job")
   @PostMapping(value = "schedule", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> scheduleJob(Authentication authentication,
