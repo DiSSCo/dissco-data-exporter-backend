@@ -36,11 +36,11 @@ spec:
               value: /temp/tmp.csv.gz
             - name: endpoint.backend
               value: ${endpointBackend}
-            - name: endpoint.token
+            - name: spring.security.oauth2.client.provider.dissco.token-uri
               value: ${tokenEndpoint}
-            - name: token.grant-type
+            - name: spring.security.oauth2.client.registration.dissco.authorization-grant-type
               value: client_credentials
-            - name: token.id
+            - name: spring.security.oauth2.client.registration.dissco.client-id
               value: ${tokenIdName}
             - name: s3.bucket-name
               value: ${bucketName}
@@ -54,7 +54,7 @@ spec:
                 secretKeyRef:
                   name: aws-secrets
                   key: export-s3-access-key-secret
-            - name: token.secret
+            - name: spring.security.oauth2.client.registration.dissco.client-secret
               valueFrom:
                 secretKeyRef:
                   name: aws-secrets
