@@ -11,7 +11,7 @@ import static eu.dissco.dataexporter.utils.TestUtils.givenJobResult;
 import static eu.dissco.dataexporter.utils.TestUtils.givenSearchParams;
 import static eu.dissco.dataexporter.utils.TestUtils.givenScheduledJob;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import eu.dissco.dataexporter.database.jooq.enums.ExportType;
@@ -114,7 +114,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
   }
 
   @Test
-  void testGetRunningJobs() throws Exception {
+  void testGetRunningAndQueuedJobs() throws Exception {
     // Given
     repository.addJobToQueue(givenScheduledJob());
     repository.addJobToQueue(new ExportJob(
@@ -134,7 +134,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     repository.updateJobState(ID, JobState.RUNNING);
 
     // When
-    var result = repository.getRunningJobs();
+    var result = repository.getRunningAndQueuedJobs();
 
     // Then
     assertThat(result).isEqualTo(1);

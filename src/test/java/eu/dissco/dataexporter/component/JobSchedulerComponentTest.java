@@ -58,7 +58,7 @@ class JobSchedulerComponentTest {
   @Test
   void testQueueIsFull() {
     // Given
-    given(repository.getRunningJobs()).willReturn(JOB_QUEUE_SIZE);
+    given(repository.getRunningAndQueuedJobs()).willReturn(JOB_QUEUE_SIZE);
 
     // When
     jobScheduler.schedule();
@@ -71,7 +71,7 @@ class JobSchedulerComponentTest {
   @Test
   void testNoJobsRunning() {
     // Given
-    given(repository.getRunningJobs()).willReturn(0);
+    given(repository.getRunningAndQueuedJobs()).willReturn(0);
     given(repository.getNextJobInQueue()).willReturn(Optional.empty());
 
     // When
@@ -87,7 +87,7 @@ class JobSchedulerComponentTest {
     // Given
     var exportJob = givenScheduledJob();
     var jobRequestMock = mock(APIcreateNamespacedJobRequest.class);
-    given(repository.getRunningJobs()).willReturn(0);
+    given(repository.getRunningAndQueuedJobs()).willReturn(0);
     given(jobProperties.getNamespace()).willReturn(NAMESPACE);
     given(jobProperties.getImage()).willReturn("image");
     given(jobProperties.getBucketName()).willReturn("bucket");
@@ -113,7 +113,7 @@ class JobSchedulerComponentTest {
     // Given
     var jobRequestMock = mock(APIcreateNamespacedJobRequest.class);
     var exportJob = givenScheduledJob();
-    given(repository.getRunningJobs()).willReturn(0);
+    given(repository.getRunningAndQueuedJobs()).willReturn(0);
     given(jobProperties.getNamespace()).willReturn(NAMESPACE);
     given(repository.getNextJobInQueue()).willReturn(Optional.of(exportJob));
     given(batchV1Api.createNamespacedJob(eq(NAMESPACE), any())).willReturn(jobRequestMock);

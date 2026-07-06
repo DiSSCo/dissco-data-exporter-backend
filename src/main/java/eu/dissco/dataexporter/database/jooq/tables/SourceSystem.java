@@ -10,7 +10,9 @@ import eu.dissco.dataexporter.database.jooq.enums.TranslatorType;
 import eu.dissco.dataexporter.database.jooq.tables.records.SourceSystemRecord;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.jooq.Condition;
 import org.jooq.Field;
@@ -122,6 +124,11 @@ public class SourceSystem extends TableImpl<SourceSystemRecord> {
      */
     public final TableField<SourceSystemRecord, byte[]> EML = createField(DSL.name("eml"), SQLDataType.BLOB, this, "");
 
+    /**
+     * The column <code>public.source_system.filters</code>.
+     */
+    public final TableField<SourceSystemRecord, String[]> FILTERS = createField(DSL.name("filters"), SQLDataType.CLOB.array(), this, "");
+
     private SourceSystem(Name alias, Table<SourceSystemRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -159,6 +166,11 @@ public class SourceSystem extends TableImpl<SourceSystemRecord> {
     @Override
     public UniqueKey<SourceSystemRecord> getPrimaryKey() {
         return Keys.SOURCE_SYSTEM_PKEY;
+    }
+
+    @Override
+    public List<UniqueKey<SourceSystemRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.ENDPOINT_UNIQUE, Keys.NAME_UNIQUE);
     }
 
     @Override

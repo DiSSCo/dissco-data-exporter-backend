@@ -117,7 +117,7 @@ public class ExportQueue extends TableImpl<ExportQueueRecord> {
     /**
      * The column <code>public.export_queue.is_source_system_job</code>.
      */
-    public final TableField<ExportQueueRecord, Boolean> IS_SOURCE_SYSTEM_JOB = createField(DSL.name("is_source_system_job"), SQLDataType.BOOLEAN, this, "");
+    public final TableField<ExportQueueRecord, Boolean> IS_SOURCE_SYSTEM_JOB = createField(DSL.name("is_source_system_job"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     private ExportQueue(Name alias, Table<ExportQueueRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

@@ -13,7 +13,6 @@ import freemarker.template.TemplateException;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.BatchV1Api;
 import io.kubernetes.client.openapi.models.V1Job;
-import jakarta.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class JobSchedulerComponent {
 
   @Scheduled(fixedRate = 10000)
   public void schedule() {
-    var runningJobs = repository.getRunningJobs();
+    var runningJobs = repository.getRunningAndQueuedJobs();
     if (runningJobs < jobProperties.getQueueSize()) {
       var nextJob = repository.getNextJobInQueue();
       if (nextJob.isPresent()) {
@@ -68,9 +67,12 @@ public class JobSchedulerComponent {
           log.error("Failed to execute job {}", nextJob.get().id(), e);
           repository.updateJobState(nextJob.get().id(), JobState.FAILED);
         }
+      } else {
+        log.debug("No Jobs in queue");
       }
+    } else {
+      log.debug("{} jobs already running or queued", runningJobs);
     }
-    log.debug("No jobs in queue");
   }
 
   private void scheduleJob(ExportJob exportJob) throws ApiException {
