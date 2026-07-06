@@ -46,10 +46,11 @@ public class DataExporterRepository {
         .execute();
   }
 
-  public Integer getRunningJobs() {
+  public Integer getRunningAndQueuedJobs() {
     return context.selectCount()
         .from(EXPORT_QUEUE)
-        .where(EXPORT_QUEUE.JOB_STATE.eq(JobState.RUNNING))
+        .where(EXPORT_QUEUE.JOB_STATE.eq(JobState.RUNNING)
+            .or(EXPORT_QUEUE.JOB_STATE.eq(JobState.QUEUED)))
         .fetchOne(0, Integer.class);
   }
 

@@ -114,7 +114,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
   }
 
   @Test
-  void testGetRunningJobs() throws Exception {
+  void testGetRunningAndQueuedJobs() throws Exception {
     // Given
     repository.addJobToQueue(givenScheduledJob());
     repository.addJobToQueue(new ExportJob(
@@ -134,7 +134,7 @@ class DataExporterRepositoryTest extends BaseRepositoryIT {
     repository.updateJobState(ID, JobState.RUNNING);
 
     // When
-    var result = repository.getRunningJobs();
+    var result = repository.getRunningAndQueuedJobs();
 
     // Then
     assertThat(result).isEqualTo(1);

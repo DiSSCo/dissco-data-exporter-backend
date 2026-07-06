@@ -27,5 +27,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<ExportQueueRecord> EXPORT_QUEUE_PK = Internal.createUniqueKey(ExportQueue.EXPORT_QUEUE, DSL.name("export_queue_pk"), new TableField[] { ExportQueue.EXPORT_QUEUE.ID }, true);
+    public static final UniqueKey<SourceSystemRecord> ENDPOINT_UNIQUE = Internal.createUniqueKey(SourceSystem.SOURCE_SYSTEM, DSL.name("endpoint_unique"), new TableField[] { SourceSystem.SOURCE_SYSTEM.ENDPOINT, SourceSystem.SOURCE_SYSTEM.TOMBSTONED, SourceSystem.SOURCE_SYSTEM.FILTERS }, true);
+    public static final UniqueKey<SourceSystemRecord> NAME_UNIQUE = Internal.createUniqueKey(SourceSystem.SOURCE_SYSTEM, DSL.name("name_unique"), new TableField[] { SourceSystem.SOURCE_SYSTEM.NAME }, true);
     public static final UniqueKey<SourceSystemRecord> SOURCE_SYSTEM_PKEY = Internal.createUniqueKey(SourceSystem.SOURCE_SYSTEM, DSL.name("source_system_pkey"), new TableField[] { SourceSystem.SOURCE_SYSTEM.ID }, true);
 }
